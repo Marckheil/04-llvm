@@ -1,0 +1,41 @@
+# PassPilot default configuration. Paths are relative to the repo root.
+
+llvm:
+  # Pinned upstream LLVM (Homebrew llvm@22). Never Apple's /usr/bin/clang.
+  bin_dir: /opt/homebrew/opt/llvm@22/bin
+  version: "22.1.8"
+
+target:
+  # Backend optimization level used for every candidate, so only the
+  # middle-end pipeline differs between them.
+  codegen_opt: "-O3"
+  link_flags: ["-lm"]
+
+paths:
+  polybench_src: benchmarks/src/polybench-c-4.2.1-beta
+  build_dir: build
+  results_dir: results
+
+polybench:
+  # "time" variant: kernel timer on, large inputs.
+  time_dataset: LARGE_DATASET
+  # "check" variant: array dump on, smaller inputs (used by the correctness gate).
+  check_dataset: MEDIUM_DATASET
+  # Per-benchmark dataset override for the time variant, e.g. {jacobi-1d: EXTRALARGE_DATASET}
+  dataset_overrides: {}
+
+timing:
+  warmup: 2
+  reps: 15
+  min_runtime_s: 0.5
+  max_cv: 0.02
+  bootstrap_samples: 10000
+
+limits:
+  compile_timeout_s: 120
+  run_timeout_s: 300
+
+episode:
+  compile_budget: 30
+
+seeds: [0, 1, 2]
