@@ -77,5 +77,5 @@ def build_from_source(tc: Toolchain, cfg: dict, bench: Benchmark, variant: str,
     includes, sources = _sources(cfg, bench)
     out_bin.parent.mkdir(parents=True, exist_ok=True)
     tc.clang([opt_level, *includes, *defines(cfg, bench, variant), *sources,
-              *cfg["target"]["link_flags"], "-o", out_bin])
+              *tc.runtime_objs(), *cfg["target"]["link_flags"], "-o", out_bin])
     return out_bin

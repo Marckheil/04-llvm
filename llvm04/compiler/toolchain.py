@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from llvm04 import proc
-from llvm04.config import sdk_path
+from llvm04.config import REPO_ROOT, repo_path, sdk_path
 
 
 class CompileError(Exception):
@@ -36,6 +36,8 @@ class Toolchain:
         self.codegen_opt = cfg["target"]["codegen_opt"]
         self.link_flags = cfg["target"]["link_flags"]
         self.timeout_s = cfg["limits"]["compile_timeout_s"]
+        self.runtime_srcs = [REPO_ROOT / p for p in cfg["target"].get("runtime", [])]
+        self.runtime_dir = repo_path(cfg, "build_dir") / "runtime"
 
     def tool(self, name: str) -> Path:
         path = self.bin_dir / name
@@ -68,8 +70,19 @@ class Toolchain:
             "llc", [self.tool("llc"), self.codegen_opt, "-filetype=obj", in_bc, "-o", out_obj]
         )
 
+    def runtime_objs(self) -> list[Path]:
+        """Objects for `target.runtime`, rebuilt only when their source changes."""
+        objs = []
+        for src in self.runtime_srcs:
+            obj = self.runtime_dir / f"{src.stem}.o"
+            if not obj.exists() or obj.stat().st_mtime < src.stat().st_mtime:
+                obj.parent.mkdir(parents=True, exist_ok=True)
+                self.clang(["-O2", "-c", src, "-o", obj])
+            objs.append(obj)
+        return objs
+
     def link(self, objs: list[Path], out_bin: Path) -> proc.ProcResult:
-        return self.clang([*objs, *self.link_flags, "-o", out_bin])
+        return self.clang([*objs, *self.runtime_objs(), *self.link_flags, "-o", out_bin])
 
     def build(self, in_bc: Path, pipeline: str, out_bin: Path) -> BuildResult:
         """Apply `pipeline` to `in_bc` and produce a linked binary at `out_bin`."""

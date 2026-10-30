@@ -10,6 +10,9 @@ target:
   # middle-end pipeline differs between them.
   codegen_opt: "-O3"
   link_flags: ["-lm"]
+  # Support code linked into every binary, compiled once and never tuned.
+  # placement.c pins array placement (docs/decisions.md D7).
+  runtime: [benchmarks/runtime/placement.c]
 
 paths:
   polybench_src: benchmarks/src/polybench-c-4.2.1-beta

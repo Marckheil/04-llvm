@@ -20,8 +20,8 @@ def parse_polybench_time(stdout: str) -> float:
     return float(lines[-1])
 
 
-def time_once(binary: Path, timeout_s: float) -> float:
-    res = proc.run([binary], timeout_s)
+def time_once(binary: Path, timeout_s: float, env: dict | None = None) -> float:
+    res = proc.run([binary], timeout_s, env=env)
     if res.returncode != 0:
         raise RunError(f"{binary} exited {res.returncode}: {res.stderr.strip()[:300]}")
     return parse_polybench_time(res.stdout)
@@ -38,6 +38,20 @@ def run_interleaved(binaries: dict[str, Path], warmup: int, reps: int,
     for i in range(reps):
         for n in (names if i % 2 == 0 else names[::-1]):
             samples[n].append(time_once(binaries[n], timeout_s))
+    return samples
+
+
+def time_layouts(binary: Path, salts: list[int], reps: int,
+                 timeout_s: float) -> dict[int, list[float]]:
+    """Time `binary` under several array layouts (benchmarks/runtime/placement.c).
+
+    A speedup that only holds for some salts is a layout effect, not a real win.
+    """
+    samples: dict[int, list[float]] = {s: [] for s in salts}
+    for i in range(reps):
+        for s in (salts if i % 2 == 0 else salts[::-1]):
+            env = {"LLVM04_LAYOUT_SALT": str(s)}
+            samples[s].append(time_once(binary, timeout_s, env))
     return samples
 
 

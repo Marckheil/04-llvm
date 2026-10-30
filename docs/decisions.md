@@ -35,3 +35,16 @@ One entry per decision: what, why, and what would change it.
   - Repeating the kernel in a loop: this changes the code being optimized and invites fake wins.
   - A separate "short" tier timed ~200 times: more runs don't remove systematic drift. This could be added in Phase 5 without changing earlier work.
 - **Integrity:** the 0.5 s rule and the exclusion list were fixed before any tuning ran. The exclusion is based on `-O3` runtime only, never on how any method performed. Final reported set: 22/30 PolyBench kernels.
+
+## D7. Array placement is pinned by a runtime, not left to macOS malloc (2026-10-30)
+- **What:** `benchmarks/runtime/placement.c` is linked into every binary, both pipeline and clang builds, and is never tuned. It overrides `posix_memalign`/`free` for the executable and places every PolyBench array in allocation order inside one 16 MB-aligned arena, with a guard page between arrays. `LLVM04_LAYOUT_SALT=k` moves array i by 3k(i+1) pages. `timing.time_layouts` re-times a binary under several salts.
+- **Why:** Phase 0 measured doitgen's `default<O3>` pipeline as 18% slower than clang -O3 (parity 0.820). Root cause:
+  - The machine code and layout were identical. Re-signing the binary removed the gap, and a byte-identical relink kept it.
+  - Both modes retire the same instructions (32.4 G) at the same clock (3.47 GHz), but the slow one takes 20% more cycles (16.4 G vs 13.7 G).
+  - An interposer (`experiments/layout/`) logged allocations over 30 runs of a build that flips modes. The mode followed the placement in all 30 runs: slow exactly when `C4 - sum == 4 MB - 16 KB`. macOS malloc puts `sum` at `...004000` or `...c04000`, and which one it picks depends on the binary's bytes.
+  - Forcing that exact distance makes any build slow (4.85 s vs 4.09 s). Moving either array by 16 B or more makes it fast, and so does any other distance tested (2/12/20/36 MB - 16 KB, 4 MB, 4 MB - 32 KB).
+  - The kernel stores `sum[p]` on every inner iteration because `sum` may alias `A`/`C4`. With `restrict` on `sum` the store goes away and placement stops mattering (3.55-3.62 s at every distance). This fits a false store-to-load dependence in the M2's hashed memory-dependence prediction. The hash is undocumented, and hardware counters weren't checked.
+- **Effect:** doitgen pipeline vs clang is now 4.01-4.14 s vs 3.96-4.10 s, with no slow mode across re-signed copies or salts 0-3. Kernel outputs (`check` variant, all 22 benchmarks) are byte-identical with and without the runtime. doitgen stays in the benchmark set.
+- **Integrity:** the layout is the same for every candidate and baseline and is fixed before tuning. Any claimed speedup must still hold under other salts (`time_layouts`), which catches wins that come from layout luck.
+- **Note:** removing that store is worth about 12% on doitgen. `loop-versioning-licm` can do it legally, so the tuner can earn that win for real.
+- **Open:** confirm the stall type with hardware counters (needs Xcode Instruments or kperf with sudo).

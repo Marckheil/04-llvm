@@ -22,7 +22,7 @@ class ProcTimeout(Exception):
         self.timeout_s = timeout_s
 
 
-def run(cmd: list, timeout_s: float, cwd=None) -> ProcResult:
+def run(cmd: list, timeout_s: float, cwd=None, env: dict | None = None) -> ProcResult:
     # New session so a timeout also kills children (e.g. clang -> ld).
     start = time.perf_counter()
     p = subprocess.Popen(
@@ -31,6 +31,7 @@ def run(cmd: list, timeout_s: float, cwd=None) -> ProcResult:
         stderr=subprocess.PIPE,
         text=True,
         cwd=cwd,
+        env={**os.environ, **env} if env else None,
         start_new_session=True,
     )
     try:
