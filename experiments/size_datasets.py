@@ -11,12 +11,12 @@ import copy
 import re
 import sys
 
-from passpilot.bench.machine import preflight_warnings
-from passpilot.bench.polybench import build_bitcode, list_benchmarks
-from passpilot.bench.timing import time_once
-from passpilot.compiler.toolchain import Toolchain
-from passpilot.config import DEFAULT_CONFIG, load_config, repo_path
-from passpilot.proc import ProcTimeout
+from llvm04.bench.machine import preflight_warnings
+from llvm04.bench.polybench import build_bitcode, list_benchmarks
+from llvm04.bench.timing import time_once
+from llvm04.compiler.toolchain import Toolchain
+from llvm04.config import DEFAULT_CONFIG, load_config, repo_path
+from llvm04.proc import ProcTimeout
 
 SIZES = ["SMALL_DATASET", "MEDIUM_DATASET", "LARGE_DATASET", "EXTRALARGE_DATASET"]
 

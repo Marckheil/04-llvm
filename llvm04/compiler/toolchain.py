@@ -3,8 +3,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from passpilot import proc
-from passpilot.config import sdk_path
+from llvm04 import proc
+from llvm04.config import sdk_path
 
 
 class CompileError(Exception):

@@ -17,7 +17,7 @@ One entry per decision: what, why, and what would change it.
 
 ## D4. Timing = PolyBench kernel timer, LARGE dataset, ABBA interleaving (2026-10-30)
 - **What:** `-DPOLYBENCH_TIME` (kernel-only wall time), `LARGE_DATASET` by default with per-benchmark overrides, 2 warm-up runs + 15 timed runs in ABBA order, the median, and a bootstrap 95% CI on the ratio of medians.
-- **Why:** macOS can't pin cores or disable boost (PASSPILOT.md 5a). Kernel-only timing excludes init noise.
+- **Why:** macOS can't pin cores or disable boost (04LLVM.md 5a). Kernel-only timing excludes init noise.
 
 ## D5. Two bitcode variants per benchmark (2026-10-30)
 - **What:** `time` (LARGE + timer) and `check` (MEDIUM + `POLYBENCH_DUMP_ARRAYS`). Every candidate pipeline is applied to both.

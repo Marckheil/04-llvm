@@ -1,11 +1,11 @@
-"""Benchmark timing and speedup statistics (macOS protocol, PASSPILOT.md Section 5a)."""
+"""Benchmark timing and speedup statistics (macOS protocol, 04LLVM.md Section 5a)."""
 
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 
-from passpilot import proc
+from llvm04 import proc
 
 
 class RunError(Exception):

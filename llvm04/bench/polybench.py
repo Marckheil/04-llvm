@@ -3,8 +3,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from passpilot.compiler.toolchain import Toolchain
-from passpilot.config import repo_path
+from llvm04.compiler.toolchain import Toolchain
+from llvm04.config import repo_path
 
 VARIANTS = ("time", "check")
 

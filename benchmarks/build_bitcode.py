@@ -3,9 +3,9 @@
 import argparse
 import sys
 
-from passpilot.bench.polybench import VARIANTS, build_bitcode, list_benchmarks
-from passpilot.compiler.toolchain import CompileError, Toolchain
-from passpilot.config import load_config
+from llvm04.bench.polybench import VARIANTS, build_bitcode, list_benchmarks
+from llvm04.compiler.toolchain import CompileError, Toolchain
+from llvm04.config import load_config
 
 
 def main() -> int:

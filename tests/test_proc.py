@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from passpilot import proc
+from llvm04 import proc
 
 
 def test_run_captures_output():

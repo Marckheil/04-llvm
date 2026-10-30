@@ -1,6 +1,6 @@
-# PassPilot
+# 04llvm
 
-Agentic LLVM pass-pipeline autotuner. See [PASSPILOT.md](PASSPILOT.md) for the plan and [docs/decisions.md](docs/decisions.md) for design choices.
+Agentic LLVM pass-pipeline autotuner. See [04LLVM.md](04LLVM.md) for the plan and [docs/decisions.md](docs/decisions.md) for design choices.
 
 **Platform:** Apple M2 (arm64), macOS. **Toolchain:** LLVM 22.1.8 (Homebrew `llvm@22`).
 

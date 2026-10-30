@@ -1,4 +1,4 @@
-# PassPilot default configuration. Paths are relative to the repo root.
+# 04llvm default configuration. Paths are relative to the repo root.
 
 llvm:
   # Pinned upstream LLVM (Homebrew llvm@22). Never Apple's /usr/bin/clang.
