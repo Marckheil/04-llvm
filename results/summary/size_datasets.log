@@ -1,0 +1,36 @@
+WARNING: on battery: plug in for stable timings
+2mm              LARGE_DATASET          1.903s  ok
+3mm              LARGE_DATASET          3.075s  ok
+adi              LARGE_DATASET          6.281s  ok
+atax             EXTRALARGE_DATASET     0.008s  below floor at largest size
+bicg             EXTRALARGE_DATASET     0.018s  below floor at largest size
+cholesky         LARGE_DATASET          1.489s  ok
+correlation      LARGE_DATASET          1.211s  ok
+covariance       LARGE_DATASET          1.222s  ok
+deriche          EXTRALARGE_DATASET     0.522s  ok
+doitgen          EXTRALARGE_DATASET     4.199s  ok
+durbin           EXTRALARGE_DATASET     0.014s  below floor at largest size
+fdtd-2d          LARGE_DATASET          0.600s  ok
+floyd-warshall   LARGE_DATASET          9.069s  ok
+gemm             EXTRALARGE_DATASET     1.771s  ok
+gemver           EXTRALARGE_DATASET     0.060s  below floor at largest size
+gesummv          EXTRALARGE_DATASET     0.029s  below floor at largest size
+gramschmidt      LARGE_DATASET          1.599s  ok
+heat-3d          LARGE_DATASET          0.888s  ok
+jacobi-1d        EXTRALARGE_DATASET     0.003s  below floor at largest size
+jacobi-2d        LARGE_DATASET          0.646s  ok
+lu               LARGE_DATASET          3.023s  ok
+ludcmp           LARGE_DATASET          2.925s  ok
+mvt              EXTRALARGE_DATASET     0.051s  below floor at largest size
+nussinov         LARGE_DATASET          1.343s  ok
+seidel-2d        MEDIUM_DATASET         0.123s  below floor at largest size
+symm             LARGE_DATASET          0.931s  ok
+syr2k            LARGE_DATASET          0.932s  ok
+syrk             EXTRALARGE_DATASET     6.611s  ok
+trisolv          EXTRALARGE_DATASET     0.012s  below floor at largest size
+trmm             LARGE_DATASET          0.665s  ok
+
+wrote 13 overrides to /Users/donmarckheildesmond/04-llvm/configs/default.yaml
+
+# Re-run after fixing the size-bounce bug (replaces the seidel-2d line above):
+seidel-2d        LARGE_DATASET         17.766s  above max (next size down is below floor)

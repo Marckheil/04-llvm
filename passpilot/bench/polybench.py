@@ -19,10 +19,13 @@ class Benchmark:
         return self.source.parent
 
 
-def list_benchmarks(cfg: dict) -> list[Benchmark]:
+def list_benchmarks(cfg: dict, include_excluded: bool = False) -> list[Benchmark]:
     root = repo_path(cfg, "polybench_src")
     lines = (root / "utilities" / "benchmark_list").read_text().split()
     benches = [Benchmark(Path(l).stem, (root / l).resolve()) for l in lines]
+    if not include_excluded:
+        excluded = set(cfg["polybench"].get("exclude", []))
+        benches = [b for b in benches if b.name not in excluded]
     return sorted(benches, key=lambda b: b.name)
 
 
@@ -46,7 +49,8 @@ def bitcode_path(cfg: dict, bench: Benchmark, variant: str) -> Path:
     return repo_path(cfg, "build_dir") / "bitcode" / f"{bench.name}.{variant}.bc"
 
 
-def build_bitcode(tc: Toolchain, cfg: dict, bench: Benchmark, variant: str) -> Path:
+def build_bitcode(tc: Toolchain, cfg: dict, bench: Benchmark, variant: str,
+                  out: Path | None = None) -> Path:
     """Unoptimized but metadata-complete bitcode (TBAA etc.), linked into one module.
 
     -O3 -Xclang -disable-llvm-passes keeps the frontend metadata that -O0 drops,
@@ -54,7 +58,7 @@ def build_bitcode(tc: Toolchain, cfg: dict, bench: Benchmark, variant: str) -> P
     frontend tags every loop with llvm.loop.unroll.disable.
     """
     includes, sources = _sources(cfg, bench)
-    out = bitcode_path(cfg, bench, variant)
+    out = out or bitcode_path(cfg, bench, variant)
     parts_dir = out.parent / "parts"
     parts_dir.mkdir(parents=True, exist_ok=True)
     parts = []

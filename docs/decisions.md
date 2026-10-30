@@ -23,3 +23,15 @@ One entry per decision: what, why, and what would change it.
 - **What:** `time` (LARGE + timer) and `check` (MEDIUM + `POLYBENCH_DUMP_ARRAYS`). Every candidate pipeline is applied to both.
 - **Why:** Array dumps at LARGE are huge and would pollute timing. The correctness gate (Phase 1) diffs the `check` output against `-O0`.
 - **Open:** exact match vs a float tolerance; decide in Phase 1.
+
+## D6. Per-benchmark dataset sizes; 8 short kernels excluded (2026-10-30)
+- **What:** `experiments/size_datasets.py` picks, for each benchmark, the dataset size where one `default<O3>` run takes 0.5–10 s (log: `results/summary/size_datasets.log`).
+  - 18 benchmarks use LARGE. `seidel-2d` is one of them at 17.8 s, because MEDIUM is only 0.12 s.
+  - 4 benchmarks use EXTRALARGE: deriche, doitgen, gemm, syrk.
+  - 8 benchmarks are excluded: atax, bicg, durbin, gemver, gesummv, jacobi-1d, mvt, trisolv.
+- **Why exclude:** these run 3–60 ms even at EXTRALARGE. They are O(N²) kernels or smaller, and memory-bound. At that length the M2's run-to-run noise (6–12% measured on atax) is larger than typical pass-ordering wins (2–5%).
+- **Alternatives rejected:**
+  - Custom bigger arrays: atax would need ~2 GB, and memory bandwidth would then dominate.
+  - Repeating the kernel in a loop: this changes the code being optimized and invites fake wins.
+  - A separate "short" tier timed ~200 times: more runs don't remove systematic drift. This could be added in Phase 5 without changing earlier work.
+- **Integrity:** the 0.5 s rule and the exclusion list were fixed before any tuning ran. The exclusion is based on `-O3` runtime only, never on how any method performed. Final reported set: 22/30 PolyBench kernels.

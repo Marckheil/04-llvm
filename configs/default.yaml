@@ -21,13 +21,22 @@ polybench:
   time_dataset: LARGE_DATASET
   # "check" variant: array dump on, smaller inputs (used by the correctness gate).
   check_dataset: MEDIUM_DATASET
-  # Per-benchmark dataset override for the time variant, e.g. {jacobi-1d: EXTRALARGE_DATASET}
-  dataset_overrides: {}
+  # Too short to time reliably on the M2 (< 60 ms even at EXTRALARGE).
+  # Excluded before any tuning; see docs/decisions.md D6.
+  exclude: [atax, bicg, durbin, gemver, gesummv, jacobi-1d, mvt, trisolv]
+  # Per-benchmark dataset override for the time variant, written by experiments/size_datasets.py
+  dataset_overrides:
+    deriche: EXTRALARGE_DATASET
+    doitgen: EXTRALARGE_DATASET
+    gemm: EXTRALARGE_DATASET
+    syrk: EXTRALARGE_DATASET
 
 timing:
   warmup: 2
   reps: 15
   min_runtime_s: 0.5
+  # Upper bound used when picking dataset sizes (experiments/size_datasets.py).
+  max_runtime_s: 10.0
   max_cv: 0.02
   bootstrap_samples: 10000
 
