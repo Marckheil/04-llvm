@@ -74,8 +74,9 @@ class Toolchain:
     def build(self, in_bc: Path, pipeline: str, out_bin: Path) -> BuildResult:
         """Apply `pipeline` to `in_bc` and produce a linked binary at `out_bin`."""
         out_bin.parent.mkdir(parents=True, exist_ok=True)
-        opt_bc = out_bin.with_suffix(".opt.bc")
-        obj = out_bin.with_suffix(".o")
+        # Append, don't use with_suffix: "gemm.cand1" would become "gemm.o" and collide.
+        opt_bc = out_bin.with_name(out_bin.name + ".opt.bc")
+        obj = out_bin.with_name(out_bin.name + ".o")
         opt_res = self.opt(in_bc, opt_bc, pipeline)
         llc_res = self.llc(opt_bc, obj)
         link_res = self.link([obj], out_bin)

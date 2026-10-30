@@ -4,11 +4,12 @@ For each benchmark, builds
   pipeline_O3: bitcode -> opt -passes=default<O3> -> llc -> link  (what we tune against)
   clang_O3:    clang -O3 straight from source                     (the real -O3)
 times both interleaved, and reports noise (CV) and parity (speedup CI).
-Writes results/phase0_noise.csv.
+Writes results/<out>.csv (summary) and results/<out>_samples.json (every timed run).
 """
 
 import argparse
 import csv
+import json
 import sys
 
 import numpy as np
@@ -27,6 +28,8 @@ def main() -> int:
     ap.add_argument("--config")
     ap.add_argument("--bench", nargs="*", help="only these benchmarks")
     ap.add_argument("--reps", type=int, help="override timing.reps")
+    ap.add_argument("--out", default="phase0_noise",
+                    help="output name under results/ (use a new one for --bench reruns)")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -42,6 +45,7 @@ def main() -> int:
     results_dir.mkdir(parents=True, exist_ok=True)
 
     rows = []
+    raw = {}
     benches = [b for b in list_benchmarks(cfg) if not args.bench or b.name in args.bench]
     for bench in benches:
         bc = bitcode_path(cfg, bench, "time")
@@ -52,6 +56,7 @@ def main() -> int:
 
         s = run_interleaved({"pipeline": pipe.binary, "clang": ref}, t["warmup"], reps,
                             cfg["limits"]["run_timeout_s"])
+        raw[bench.name] = s
         parity = speedup_ci(s["clang"], s["pipeline"], t["bootstrap_samples"], cfg["seeds"][0])
         row = {
             "benchmark": bench.name,
@@ -74,7 +79,8 @@ def main() -> int:
               f"  parity {parity.ratio:.3f} [{parity.ci_lo:.3f}, {parity.ci_hi:.3f}]"
               f"  {'OK' if not flags else 'CHECK: ' + flags}")
 
-    out = results_dir / "phase0_noise.csv"
+    out = results_dir / f"{args.out}.csv"
+    (results_dir / f"{args.out}_samples.json").write_text(json.dumps(raw, indent=1))
     with open(out, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
