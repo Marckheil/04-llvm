@@ -9,3 +9,6 @@ benchmarks/src/
 # Raw results are gitignored; commit small summaries under results/summary/.
 results/*
 !results/summary/
+
+# Local-only planning notes.
+PASSPILOT.md
