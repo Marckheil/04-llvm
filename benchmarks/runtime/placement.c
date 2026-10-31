@@ -11,11 +11,16 @@
 //
 // LLVM04_LAYOUT_SALT=<k> moves block i by k * 3 * (i + 1) pages. Re-timing a
 // result with a few salts shows whether it depends on layout.
+//
+// LLVM04_DUMP_DIR=<dir> writes every block's final bytes to <dir>/block<i>.bin at
+// exit. The correctness gate (llvm04/bench/correctness.py) compares them at full
+// precision, which is far stricter than PolyBench's 2-decimal array dump.
 #include <malloc/malloc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #define ARENA_ALIGN ((size_t)16 << 20)
 #define ARENA_RESERVE ((size_t)8 << 30)  // virtual only; pages are touched lazily
@@ -24,6 +29,24 @@
 static char *arena_base, *arena_next, *arena_end;
 static unsigned block_idx;
 static size_t salt;
+
+#define MAX_BLOCKS 64
+static struct { const unsigned char *p; size_t n; } blocks[MAX_BLOCKS];
+
+static void dump_blocks(void) {
+  const char *dir = getenv("LLVM04_DUMP_DIR");
+  if (!dir) return;
+  for (unsigned i = 0; i < block_idx && i < MAX_BLOCKS; i++) {
+    char path[4096];
+    snprintf(path, sizeof path, "%s/block%u.bin", dir, i);
+    FILE *f = fopen(path, "wb");
+    if (!f || fwrite(blocks[i].p, 1, blocks[i].n, f) != blocks[i].n) {
+      fprintf(stderr, "[placement] cannot write %s\n", path);
+      _exit(3);
+    }
+    fclose(f);
+  }
+}
 
 static void arena_init(void) {
   char *p = mmap(NULL, ARENA_RESERVE + ARENA_ALIGN, PROT_READ | PROT_WRITE,
@@ -37,6 +60,7 @@ static void arena_init(void) {
   arena_end = arena_base + ARENA_RESERVE;
   const char *s = getenv("LLVM04_LAYOUT_SALT");
   salt = s ? strtoul(s, NULL, 10) : 0;
+  atexit(dump_blocks);
 }
 
 int posix_memalign(void **out, size_t align, size_t size) {
@@ -49,6 +73,10 @@ int posix_memalign(void **out, size_t align, size_t size) {
     abort();
   }
   *out = (void *)start;
+  if (block_idx < MAX_BLOCKS) {
+    blocks[block_idx].p = (const unsigned char *)start;
+    blocks[block_idx].n = size;
+  }
   arena_next = (char *)start + size + PAGE;  // one guard page between blocks
   block_idx++;
   return 0;
@@ -56,7 +84,8 @@ int posix_memalign(void **out, size_t align, size_t size) {
 
 void free(void *p) {
   if (!p) return;
-  if ((char *)p >= arena_base && (char *)p < arena_end) return;  // arena is never reused
+  // Arena blocks are never reused, so their final contents survive for the dump.
+  if ((char *)p >= arena_base && (char *)p < arena_end) return;
   malloc_zone_t *zone = malloc_zone_from_ptr(p);
   if (zone) malloc_zone_free(zone, p);
 }

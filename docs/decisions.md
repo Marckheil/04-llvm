@@ -53,3 +53,15 @@ One entry per decision: what, why, and what would change it.
   - **jacobi-2d:** 2.0%, with odd salts 1.8% faster.
   - **Consequence:** a claimed final speedup must beat the baseline under every salt, comparing the same salt to the same salt. Search itself uses salt 0.
 - **Open:** confirm the stall type with hardware counters (needs Xcode Instruments or kperf with sudo). Recheck deriche at salt 2.
+
+## D8. Correctness gate: full-precision array compare with a 1e-9 scaled tolerance (2026-10-30)
+- **What:** `llvm04/bench/correctness.py`. Both the candidate and a clang `-O0` reference are built from the `check` variant and run with `LLVM04_DUMP_DIR`, so `benchmarks/runtime/placement.c` writes every array's final bytes at exit. Each array is compared:
+  - bit-identical: pass
+  - integer data, or a size or count change: must be exact, else `MISCOMPILE`
+  - float data: NaN positions must match, and `max|cand - ref| <= rtol * max|ref|` with `rtol = 1e-9`
+  - a crash returns `CRASH` and a timeout returns `TIMEOUT`
+- **Why not PolyBench's array dump:** it prints 2 decimals. A corrupted ludcmp (one constant scaled by 1 + 1e-7, giving 4.49250004925 instead of 4.4925) prints identically, but the gate flags it.
+- **Why not bit-exact:** 21/22 benchmarks are bit-identical to `-O0` at O1/O2/O3/Os. ludcmp is not: clang emits `llvm.fmuladd`, which LLVM may legally fuse or not, and its triangular solves differ by 3.3e-16 (scaled) at O2/O3/Os. Without fast-math, passes can't reassociate, so legal differences should stay near this size. 1e-9 leaves 6 orders of headroom.
+- **Validation** (`experiments/gate_validation.py`, `results/summary/gate_validation.log`): corrupted O3 builds of gemm, ludcmp and floyd-warshall (`fmul`->`fadd`, or `add`->`sub` for int; a constant x(1+1e-7)) are all `MISCOMPILE`. The unmodified builds pass.
+- **Limit:** the subtle gemm mutation produced a scaled error of only 1.05e-9, so corruptions around 1e-9 relative or smaller are at the gate's floor. Every non-bitwise pass is logged with its error so the threshold can be revisited.
+- **Not yet:** sanitizer runs (ASan/UBSan) as an optional stricter check.

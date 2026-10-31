@@ -43,6 +43,11 @@ timing:
   max_cv: 0.02
   bootstrap_samples: 10000
 
+correctness:
+  # Scaled tolerance for float arrays that are not bit-identical to clang -O0:
+  # max|cand - ref| <= rtol * max|ref| per array. See docs/decisions.md D8.
+  rtol: 1.0e-9
+
 limits:
   compile_timeout_s: 120
   run_timeout_s: 300

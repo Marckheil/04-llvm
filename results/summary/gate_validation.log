@@ -1,0 +1,12 @@
+## gemm
+unmodified  gate=PASS       2-decimal dump differs=False as expected  
+gross       gate=MISCOMPILE 2-decimal dump differs=True  as expected  array 0: scaled error 0.0105 > 1e-09 (element 13933: np.float64(86.07954545454541) vs np.float64(84.8795454545454))
+subtle      gate=MISCOMPILE 2-decimal dump differs=True  as expected  array 0: scaled error 1.05e-09 > 1e-09 (element 12017: np.float64(88.34400011940002) vs np.float64(88.34400000000001))
+## ludcmp
+unmodified  gate=PASS       2-decimal dump differs=False as expected  within tolerance (scaled error 3.33e-16)
+gross       gate=MISCOMPILE 2-decimal dump differs=True  as expected  array 1: scaled error 0.221 > 1e-09 (element 393: np.float64(5.484999999999999) vs np.float64(4.4925))
+subtle      gate=MISCOMPILE 2-decimal dump differs=False as expected  array 1: scaled error 1.09e-08 > 1e-09 (element 393: np.float64(4.49250004925) vs np.float64(4.4925))
+## floyd-warshall
+subtle      skipped (nothing to mutate)
+unmodified  gate=PASS       2-decimal dump differs=False as expected  
+gross       gate=MISCOMPILE 2-decimal dump differs=True  as expected  array 0: non-float data differs
