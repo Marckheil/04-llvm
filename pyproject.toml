@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Agentic LLVM pass-pipeline autotuner"
 requires-python = ">=3.11"
 dependencies = [
+  "mcp>=2.3,<3",
   "numpy>=1.26",
   "psutil>=5.9",
   "pyyaml>=6.0",

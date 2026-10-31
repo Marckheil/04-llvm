@@ -1,0 +1,44 @@
+server 04llvm: 10 tools: list_benchmarks, list_passes, get_baseline, get_ir_features, compile, check_correctness, run_benchmark, get_remarks, get_pass_timing, get_history
+
+> list_benchmarks(category='stencils')  [ok, 0.00s]
+   [('adi', 6.367015), ('fdtd-2d', 0.596537), ('heat-3d', 0.877735), ('jacobi-2d', 0.662691), ('seidel-2d', 15.917843)]
+
+> get_baseline(benchmark='jacobi-2d', level='O3')  [ok, 0.00s]
+   {"ok": true, "benchmark": "jacobi-2d", "level": "O3", "gate": "PASS", "median_s": 0.662691, "cv": 0.002096450134380988, "speedup_vs_O3": 1.0, "ci95":  ...
+
+> get_ir_features(benchmark='jacobi-2d')  [ok, 0.06s]
+   kernel: {"instructions": 191, "basic_blocks": 21, "loops": 5, "max_loop_depth": 3, "memory": 108, "int_arith": 17, "fp_arith": 10, "compare": 5, "cast": 24, " ...
+
+> compile(benchmark='jacobi-2d', passes=[], base='O3')  [ok, 0.51s]
+   {"ok": true, "build_id": "b200b1d2b00f1f69", "pipeline": "default<O3>", "compile_s": 0.1379, "text_size": 3276, "text_size_vs_O3": 1.0, "cached": fals ...
+
+> get_remarks(build_id='b200b1d2b00f1f69', kind='missed', function='main', limit=5)  [ok, 0.04s]
+   totals {'passed': 47, 'missed': 83, 'analysis': 4}
+    24 gvn/LoadClobbered: load of type ptr not eliminated in favor of store because it is clobbered by call
+     8 licm/LoadWithLoopInvariantAddressInvalidated: failed to move load with loop-invariant address because the loop may invalidate its value
+     6 slp-vectorizer/NotBeneficial: List vectorization was possible but not beneficial with cost 0 >= 0
+     2 inline/NoDefinition: free will not be inlined into main because its definition is unavailable
+     1 loop-vectorize/MissedDetails: loop not vectorized
+
+> compile(benchmark='jacobi-2d', passes=['separate-const-offset-from-gp'])  [ERROR INVALID_PIPELINE, 0.00s]
+   {"code": "INVALID_PIPELINE", "message": "unknown pass 'separate-const-offset-from-gp'; did you mean separate-const-offset-from-gep?", "pass_name": "se ...
+
+> compile(benchmark='jacobi-2d', passes=['separate-const-offset-from-gep'])  [ok, 0.31s]
+   {"ok": true, "build_id": "3a14d1f2e89512b6", "pipeline": "default<O3>,function(separate-const-offset-from-gep)", "compile_s": 0.0602, "text_size": 306 ...
+
+> check_correctness(build_id='3a14d1f2e89512b6')  [ok, 0.23s]
+   {"ok": true, "build_id": "3a14d1f2e89512b6", "status": "PASS", "bitwise_identical": true, "max_scaled_error": 0.0, "tolerance": 1e-09, "detail": ""}
+
+> run_benchmark(build_id='3a14d1f2e89512b6', repetitions=7, layout_check=True)  [ok, 25.65s]
+   {"ok": true, "build_id": "3a14d1f2e89512b6", "repetitions": 7, "median_s": 0.539286, "stdev_s": 0.012599, "O3_median_s": 0.670981, "speedup_vs_O3": 1.2442, "ci95": [1.2043, 1.2781], "verdict": "FASTER", "layout_speedups": {"0": 1.2562, "1": 1.2012, "2": 1.2448, "3": 1.2282}, "layout_robust": true}
+
+> run_benchmark(build_id='deadbeef')  [ERROR INVALID_ARGUMENT, 0.00s]
+   {"code": "INVALID_ARGUMENT", "message": "unknown build_id 'deadbeef'; build ids come from compile in this session"}
+
+> get_pass_timing(build_id='3a14d1f2e89512b6', top=5)  [ok, 0.21s]
+   {"ok": true, "build_id": "3a14d1f2e89512b6", "total_wall_s": 0.0466, "total_instructions": 164977985, "passes": [{"pass": "InstCombinePass", "wall_s": 0.0049, "instructions": 23512548}, {"pass": "LoopVectorizePass", "wall_s": 0.0038, "instructions": 18693140}, {"pass": "SimplifyCFGPass", "wall_s": 0 ...
+
+> get_history(benchmark='jacobi-2d')  [ok, 0.00s]
+   budget 2/30; best {"build_id": "3a14d1f2e89512b6", "base": "O3", "passes": ["separate-const-offset-from-gep"], "status": "OK", "compile_s": 0.0602, "text_size": 3064, "gate": "PASS", "speedup_vs_O3": 1.2442, "ci95": [1.2043, 1.2781], "verdict": "FASTER", "layout_robust": true}
+
+-> /Users/donmarckheildesmond/04-llvm/results/mcp_episode.jsonl

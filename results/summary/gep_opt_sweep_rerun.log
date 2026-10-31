@@ -1,0 +1,13 @@
+covariance       O3 1.000x [0.997, 1.003]  O3+scofg 0.996x [0.994, 1.003]  O3+gepopt 0.995x [0.979, 0.999]
+deriche          O3 1.000x [0.981, 1.019]  O3+scofg 0.989x [0.984, 1.012]  O3+gepopt 0.985x [0.977, 1.019]
+fdtd-2d          O3 1.000x [0.998, 1.002]  O3+scofg 0.994x [0.965, 1.001]  O3+gepopt 0.996x [0.989, 1.000]
+gemm             O3 1.000x [0.977, 1.024]  O3+scofg 1.001x [0.992, 1.025]  O3+gepopt 1.000x [0.966, 1.024]
+heat-3d          O3 1.000x [0.998, 1.002]  O3+scofg 0.968x [0.965, 0.971]  O3+gepopt 0.968x [0.967, 0.970]
+jacobi-2d        O3 1.000x [0.997, 1.003]  O3+scofg 1.243x [1.235, 1.247]  O3+gepopt 1.243x [1.237, 1.246]
+nussinov         O3 1.000x [0.994, 1.006]  O3+scofg 0.987x [0.981, 0.993]  O3+gepopt 1.000x [0.995, 1.003]
+
+Geomean speedup vs default<O3> over 7 benchmarks:
+  O3         1.000x  faster under every salt: 0  slower (CI < 1): 0
+  O3+scofg   1.022x  faster under every salt: 1  slower (CI < 1): 2
+  O3+gepopt  1.023x  faster under every salt: 1  slower (CI < 1): 3
+-> /Users/donmarckheildesmond/04-llvm/results/gep_opt_sweep_rerun.csv

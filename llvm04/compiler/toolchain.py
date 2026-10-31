@@ -36,8 +36,11 @@ class Toolchain:
         self.bin_dir = Path(cfg["llvm"]["bin_dir"])
         self.version = cfg["llvm"]["version"]
         self.codegen_opt = cfg["target"]["codegen_opt"]
+        self.llc_flags = cfg["target"].get("llc_flags", [])
         self.link_flags = cfg["target"]["link_flags"]
         self.timeout_s = cfg["limits"]["compile_timeout_s"]
+        self.max_rss_mb = cfg["limits"].get("compile_max_rss_mb")
+        self.max_file_mb = cfg["limits"].get("compile_max_file_mb")
         self.runtime_srcs = [REPO_ROOT / p for p in cfg["target"].get("runtime", [])]
         self.runtime_dir = repo_path(cfg, "build_dir") / "runtime"
 
@@ -53,7 +56,8 @@ class Toolchain:
             raise RuntimeError(f"expected LLVM {self.version}, got:\n{out}")
 
     def _run(self, stage: str, cmd: list) -> proc.ProcResult:
-        res = proc.run(cmd, self.timeout_s)
+        res = proc.run(cmd, self.timeout_s, max_rss_mb=self.max_rss_mb,
+                       max_file_mb=self.max_file_mb)
         if res.returncode != 0:
             raise CompileError(stage, cmd, res.stderr)
         return res
@@ -69,7 +73,8 @@ class Toolchain:
 
     def llc(self, in_bc: Path, out_obj: Path) -> proc.ProcResult:
         return self._run(
-            "llc", [self.tool("llc"), self.codegen_opt, "-filetype=obj", in_bc, "-o", out_obj]
+            "llc", [self.tool("llc"), self.codegen_opt, *self.llc_flags, "-filetype=obj", in_bc,
+                    "-o", out_obj]
         )
 
     def text_size(self, binary: Path) -> int:

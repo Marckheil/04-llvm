@@ -50,6 +50,9 @@ correctness:
 
 limits:
   compile_timeout_s: 120
+  # Caps on every compile step (opt, llc, clang); past them -> RESOURCE_LIMIT.
+  compile_max_rss_mb: 4096
+  compile_max_file_mb: 256
   run_timeout_s: 300
 
 episode:
