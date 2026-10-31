@@ -47,4 +47,9 @@ One entry per decision: what, why, and what would change it.
 - **Effect:** doitgen pipeline vs clang is now 4.01-4.14 s vs 3.96-4.10 s, with no slow mode across re-signed copies or salts 0-3. Kernel outputs (`check` variant, all 22 benchmarks) are byte-identical with and without the runtime. doitgen stays in the benchmark set.
 - **Integrity:** the layout is the same for every candidate and baseline and is fixed before tuning. Any claimed speedup must still hold under other salts (`time_layouts`), which catches wins that come from layout luck.
 - **Note:** removing that store is worth about 12% on doitgen. `loop-versioning-licm` can do it legally, so the tuner can earn that win for real.
-- **Open:** confirm the stall type with hardware counters (needs Xcode Instruments or kperf with sudo).
+- **Sensitivity sweep** (`experiments/layout_sensitivity.py`, salts 0-3, 5 runs each; `results/summary/layout_sensitivity.log`): 19 of 22 benchmarks move at most 2% between layouts.
+  - **syr2k:** 12.3%, with tight clusters. Salt 3 runs 0.885 s against 0.994 s at salt 0, and the pinned layout is one of the slow ones.
+  - **deriche:** 22.1%. Only salt 2 is affected, and its runs scatter from 0.55 to 0.76 s.
+  - **jacobi-2d:** 2.0%, with odd salts 1.8% faster.
+  - **Consequence:** a claimed final speedup must beat the baseline under every salt, comparing the same salt to the same salt. Search itself uses salt 0.
+- **Open:** confirm the stall type with hardware counters (needs Xcode Instruments or kperf with sudo). Recheck deriche at salt 2.
