@@ -78,12 +78,18 @@ async def episode(cfg: dict, acfg: AgentConfig, client, tc: Toolchain, bench, se
 async def main_async(args) -> int:
     cfg = load_config(args.config)
     a = cfg["agent"]
+    if args.profile:
+        if args.profile not in a.get("profiles", {}):
+            print(f"no agent.profiles.{args.profile} in configs/local.yaml", file=sys.stderr)
+            return 2
+        a = {**a, **a["profiles"][args.profile]}
     if "model" not in a or "price" not in a:
         print("set agent.model and agent.price in configs/local.yaml", file=sys.stderr)
         return 2
     acfg = AgentConfig(model=a["model"], price=a["price"], effort=args.effort or a["effort"],
                        max_tokens=a["max_tokens"], max_turns=a["max_turns"],
-                       max_usd=args.max_usd or a["max_usd"])
+                       max_usd=args.max_usd or a["max_usd"],
+                       fallbacks=a.get("fallbacks", True))
     budget = args.budget or cfg["episode"]["compile_budget"]
     seeds = args.seeds if args.seeds is not None else cfg["seeds"]
     tc = Toolchain(cfg)
@@ -137,6 +143,7 @@ def main() -> int:
     ap.add_argument("--bench", nargs="*", help="only these benchmarks")
     ap.add_argument("--seeds", type=int, nargs="*", help="default: config seeds")
     ap.add_argument("--budget", type=int, help="override episode.compile_budget")
+    ap.add_argument("--profile", help="an agent.profiles entry in configs/local.yaml")
     ap.add_argument("--effort", help="override agent.effort")
     ap.add_argument("--max-usd", type=float, help="per-episode cap (default agent.max_usd)")
     ap.add_argument("--total-usd", type=float, help="stop starting episodes past this spend")

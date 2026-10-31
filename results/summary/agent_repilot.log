@@ -1,0 +1,2 @@
+jacobi-2d       seed 0  WIN          1.241x [1.229, 1.252]  compiles 15/30  turns 26  stop submitted  errors 0 (malformed 0)  $0.41  261s  | O3 separate-const-offset-from-gep early-cse
+total $0.41
