@@ -1,0 +1,24 @@
+2mm                 1.874s  cv  1.01%  parity 1.002 [0.984, 1.011]  OK
+3mm                 3.066s  cv  0.35%  parity 1.000 [0.999, 1.003]  OK
+adi                 6.286s  cv  0.63%  parity 0.999 [0.991, 1.009]  OK
+cholesky            1.488s  cv  1.13%  parity 1.000 [0.996, 1.002]  OK
+correlation         1.197s  cv  1.82%  parity 1.002 [0.998, 1.004]  OK
+covariance          1.198s  cv  0.18%  parity 1.001 [0.999, 1.004]  OK
+deriche             0.522s  cv  1.40%  parity 1.001 [0.986, 1.010]  OK
+doitgen             3.992s  cv  0.99%  parity 0.999 [0.997, 1.000]  OK
+fdtd-2d             0.614s  cv  1.94%  parity 1.003 [0.988, 1.024]  OK
+floyd-warshall      9.060s  cv  0.13%  parity 0.991 [0.990, 0.992]  OK
+gemm                1.767s  cv  1.60%  parity 1.010 [0.977, 1.027]  OK
+gramschmidt         1.592s  cv  0.23%  parity 0.998 [0.997, 1.002]  OK
+heat-3d             0.874s  cv  0.60%  parity 1.003 [0.997, 1.009]  OK
+jacobi-2d           0.647s  cv  0.34%  parity 0.999 [0.996, 1.003]  OK
+lu                  2.968s  cv  0.32%  parity 1.000 [0.999, 1.002]  OK
+ludcmp              2.935s  cv  0.50%  parity 1.000 [0.996, 1.004]  OK
+nussinov            1.297s  cv  0.42%  parity 1.004 [0.998, 1.007]  OK
+seidel-2d          15.869s  cv  0.29%  parity 1.000 [0.999, 1.001]  OK
+symm                0.867s  cv  0.45%  parity 1.001 [0.997, 1.007]  OK
+syr2k               0.984s  cv  0.31%  parity 1.001 [0.997, 1.005]  OK
+syrk                6.431s  cv  0.32%  parity 1.001 [0.999, 1.002]  OK
+trmm                0.656s  cv  0.13%  parity 1.000 [0.999, 1.001]  OK
+
+22/22 benchmarks pass Phase 0 checks -> /Users/donmarckheildesmond/04-llvm/results/phase0_d7.csv
