@@ -37,7 +37,12 @@ def run(cmd: list, timeout_s: float, cwd=None, env: dict | None = None) -> ProcR
     try:
         out, err = p.communicate(timeout=timeout_s)
     except subprocess.TimeoutExpired:
-        os.killpg(p.pid, signal.SIGKILL)
+        # The child may exit between the timeout and the kill; macOS then reports
+        # EPERM (zombie group leader) rather than ESRCH.
+        try:
+            os.killpg(p.pid, signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            p.kill()
         p.communicate()
         raise ProcTimeout(cmd, timeout_s)
     return ProcResult(p.returncode, out, err, time.perf_counter() - start)
