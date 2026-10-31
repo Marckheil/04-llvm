@@ -1,5 +1,6 @@
 """Wrappers around the pinned LLVM tools: bitcode -> opt -> llc -> link."""
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -21,7 +22,8 @@ class BuildResult:
     opt_s: float
     llc_s: float
     link_s: float
-    binary_size: int
+    binary_size: int  # file size; page-padded, so it hides small code changes
+    text_size: int    # __TEXT,__text: the machine code itself
 
     @property
     def compile_s(self) -> float:
@@ -70,6 +72,13 @@ class Toolchain:
             "llc", [self.tool("llc"), self.codegen_opt, "-filetype=obj", in_bc, "-o", out_obj]
         )
 
+    def text_size(self, binary: Path) -> int:
+        out = self._run("llvm-size", [self.tool("llvm-size"), "-m", binary]).stdout
+        m = re.search(r"Section __text: (\d+)", out)
+        if not m:
+            raise CompileError("llvm-size", [binary], out)
+        return int(m[1])
+
     def runtime_objs(self) -> list[Path]:
         """Objects for `target.runtime`, rebuilt only when their source changes."""
         objs = []
@@ -99,4 +108,5 @@ class Toolchain:
             llc_s=llc_res.elapsed_s,
             link_s=link_res.elapsed_s,
             binary_size=out_bin.stat().st_size,
+            text_size=self.text_size(out_bin),
         )

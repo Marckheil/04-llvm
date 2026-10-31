@@ -55,4 +55,21 @@ limits:
 episode:
   compile_budget: 30
 
+search:
+  # Random pipelines over configs/passes.yaml (docs/decisions.md D9).
+  # scratch: the classic baseline. o3_suffix: default<O3> plus random passes,
+  # which is the neighbourhood later methods search.
+  modes:
+    scratch: {prefix: "", min_len: 5, max_len: 40}
+    o3_suffix: {prefix: "default<O3>", min_len: 1, max_len: 10}
+  # One run per candidate for ranking; a run slower than slow_cap x the O3
+  # median is killed (correct but useless, not worth waiting for).
+  screen_reps: 1
+  slow_cap: 2.0
+  # The winner is re-timed against default<O3> interleaved...
+  confirm_reps: 7
+  # ...and, if it wins, again under each layout salt (D7): it must win under all.
+  layout_salts: [0, 1, 2, 3]
+  layout_reps: 3
+
 seeds: [0, 1, 2]

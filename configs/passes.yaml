@@ -1,0 +1,79 @@
+# Curated action space: passes a pipeline may contain (docs/decisions.md D9).
+# kind decides how a pass is nested in the pipeline string:
+#   module -> name   cgscc -> cgscc(name)   function -> function(name)
+#   loop   -> function(loop-mssa(name))
+# Every name was checked against the pinned LLVM (tests/test_pipeline.py).
+module:
+  - globalopt
+  - globaldce
+  - ipsccp
+  - deadargelim
+  - constmerge
+  - mergefunc
+  - partial-inliner
+  - elim-avail-extern
+  - rpo-function-attrs
+cgscc:
+  - inline
+  - function-attrs
+  - argpromotion
+function:
+  - sroa
+  - early-cse
+  - early-cse<memssa>
+  - gvn
+  - newgvn
+  - instcombine
+  - aggressive-instcombine
+  - simplifycfg
+  - reassociate
+  - sccp
+  - dce
+  - adce
+  - bdce
+  - dse
+  - memcpyopt
+  - mldst-motion
+  - jump-threading
+  - correlated-propagation
+  - tailcallelim
+  - loop-simplify
+  - lcssa
+  - mem2reg
+  - slp-vectorizer
+  - loop-vectorize
+  - loop-distribute
+  - loop-load-elim
+  - loop-sink
+  - float2int
+  - div-rem-pairs
+  - instsimplify
+  - consthoist
+  - gvn-hoist
+  - gvn-sink
+  - sink
+  - separate-const-offset-from-gep
+  - speculative-execution
+  - nary-reassociate
+  - loop-fusion
+  - loop-data-prefetch
+  - vector-combine
+  - callsite-splitting
+  - libcalls-shrinkwrap
+  - infer-alignment
+  - loop-unroll
+  - loop-unroll-and-jam
+  - loop-versioning-licm
+  - loop-flatten
+loop:
+  - licm
+  - loop-rotate
+  - loop-deletion
+  - loop-idiom
+  - loop-instsimplify
+  - indvars
+  - loop-interchange
+  - simple-loop-unswitch
+  - loop-simplifycfg
+  - loop-unroll-full
+  - loop-bound-split

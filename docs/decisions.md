@@ -65,3 +65,19 @@ One entry per decision: what, why, and what would change it.
 - **Validation** (`experiments/gate_validation.py`, `results/summary/gate_validation.log`): corrupted O3 builds of gemm, ludcmp and floyd-warshall (`fmul`->`fadd`, or `add`->`sub` for int; a constant x(1+1e-7)) are all `MISCOMPILE`. The unmodified builds pass.
 - **Limit:** the subtle gemm mutation produced a scaled error of only 1.05e-9, so corruptions around 1e-9 relative or smaller are at the gate's floor. Every non-bitwise pass is logged with its error so the threshold can be revisited.
 - **Not yet:** sanitizer runs (ASan/UBSan) as an optional stricter check.
+
+## D9. Action space and random-search protocol (2026-10-30)
+- **Action space:** a curated list of 70 passes in `configs/passes.yaml`, grouped by level: module, cgscc, function, and loop (rendered as `function(loop-mssa(...))`). A pipeline is a sequence of names, and `compiler/pipeline.py` renders it, so every sampled pipeline is well-formed by construction. Unknown names raise `InvalidPipeline` with close-match suggestions, which the Phase 2 tools will return.
+  - Started from 78 candidates, all valid in LLVM 22.1.8.
+  - Dropped 8 that do nothing on PolyBench or duplicate the backend: annotation-remarks, always-inline, strip-dead-prototypes, lower-expect, alignment-from-assumptions, called-value-propagation, loop-predication, and loop-reduce (llc already runs LSR).
+- **Random search, two arms** (`search.modes`), each with the same budget:
+  - `scratch`: 5-40 random passes. In a smoke test, all 3 trmm candidates were more than 2x slower than O3, so this arm alone is a weak bar.
+  - `o3_suffix`: `default<O3>` plus 1-10 random passes. This is the neighbourhood the agent and ranker will mostly search, so it's the bar that matters.
+  - Passes are drawn uniformly with replacement, seeded by `<benchmark>/<mode>/<seed>`.
+  - Budget: `episode.compile_budget` = 30 candidates per benchmark and seed. Every attempt costs one, including failures.
+  - Seeds: 0, 1, 2.
+- **Screening and confirmation:**
+  - Each candidate is built in both variants and gated (D8), then timed once. Runs slower than 2x the O3 median are killed and logged as `slow`.
+  - The fastest survivor is re-timed against `default<O3>` (7 interleaved runs, bootstrap CI).
+  - If the CI excludes 1 from above, both are timed again under layout salts 0-3 (D7). The verdict is `WIN` only if the candidate is faster under every salt, otherwise `LAYOUT_ONLY`. A CI below 1 is `SLOWER`; otherwise `TIE`.
+- **Why one screening run:** the budget and the 22 benchmarks make repeated screening runs cost hours. Ranking noise only affects which candidate gets confirmed, never the reported number, which always comes from the confirmation runs.

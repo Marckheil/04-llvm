@@ -28,16 +28,16 @@ def time_once(binary: Path, timeout_s: float, env: dict | None = None) -> float:
 
 
 def run_interleaved(binaries: dict[str, Path], warmup: int, reps: int,
-                    timeout_s: float) -> dict[str, list[float]]:
+                    timeout_s: float, env: dict | None = None) -> dict[str, list[float]]:
     """Time several binaries in ABBA order so thermal drift hits each one equally."""
     names = list(binaries)
     for _ in range(warmup):
         for n in names:
-            time_once(binaries[n], timeout_s)
+            time_once(binaries[n], timeout_s, env)
     samples: dict[str, list[float]] = {n: [] for n in names}
     for i in range(reps):
         for n in (names if i % 2 == 0 else names[::-1]):
-            samples[n].append(time_once(binaries[n], timeout_s))
+            samples[n].append(time_once(binaries[n], timeout_s, env))
     return samples
 
 
