@@ -22,11 +22,12 @@ import numpy as np
 from llvm04.bench.machine import preflight_warnings
 from llvm04.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
 from llvm04 import proc
-from llvm04.bench.timing import parse_polybench_time, run_interleaved, speedup_ci, time_once
+from llvm04.bench.timing import parse_polybench_time, time_once
 from llvm04.compiler.pipeline import load_passes
 from llvm04.compiler.toolchain import Toolchain
 from llvm04.config import load_config, repo_path
 from llvm04.search.candidate import OK
+from llvm04.search.confirm import confirm
 from llvm04.search.random_search import random_search
 
 FIELDS = ["benchmark", "mode", "seed", "verdict", "speedup_vs_O3", "ci_lo", "ci_hi",
@@ -47,7 +48,7 @@ def main() -> int:
     args = ap.parse_args()
 
     cfg = load_config(args.config)
-    s, t = cfg["search"], cfg["timing"]
+    s = cfg["search"]
     args.out = args.out or f"random_search_{args.mode}"
     seeds = args.seeds if args.seeds is not None else cfg["seeds"]
     budget = args.budget or cfg["episode"]["compile_budget"]
@@ -111,29 +112,13 @@ def main() -> int:
             if best is None:
                 row["verdict"] = "NO_CANDIDATE"
             else:
-                samp = run_interleaved({"best": best.binary, "O3": o3.binary}, 1,
-                                       s["confirm_reps"], timeout)
-                sp = speedup_ci(samp["O3"], samp["best"], t["bootstrap_samples"], seed)
+                result, raw = confirm(cfg, best.binary, o3.binary, seed)
                 key = {"benchmark": bench.name, "mode": args.mode, "seed": seed}
-                timing_f.write(json.dumps({**key, "salt": None, **samp}) + "\n")
-                row.update(speedup_vs_O3=sp.ratio, ci_lo=sp.ci_lo, ci_hi=sp.ci_hi,
-                           best_screen_s=best.screen_best, best_len=len(names),
+                for r in raw:
+                    timing_f.write(json.dumps({**key, **r}) + "\n")
+                row.update(result, best_screen_s=best.screen_best, best_len=len(names),
                            best_compile_s=best.compile_s, best_text_size=best.text_size,
                            best_pipeline=" ".join(names))
-                if sp.ci_lo > 1:
-                    ratios = []
-                    for salt in s["layout_salts"]:
-                        ls = run_interleaved({"best": best.binary, "O3": o3.binary}, 0,
-                                             s["layout_reps"], timeout,
-                                             env={"LLVM04_LAYOUT_SALT": str(salt)})
-                        ratios.append(float(np.median(ls["O3"]) / np.median(ls["best"])))
-                        timing_f.write(json.dumps({**key, "salt": salt, **ls}) + "\n")
-                    row["layout_min_ratio"] = min(ratios)
-                    row["verdict"] = "WIN" if min(ratios) > 1 else "LAYOUT_ONLY"
-                elif sp.ci_hi < 1:
-                    row["verdict"] = "SLOWER"
-                else:
-                    row["verdict"] = "TIE"
             writer.writerow(row)
             csv_f.flush()
             sp_txt = (f"{row['speedup_vs_O3']:.3f}x [{row['ci_lo']:.3f}, {row['ci_hi']:.3f}]"

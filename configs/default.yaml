@@ -76,3 +76,11 @@ search:
   layout_reps: 3
 
 seeds: [0, 1, 2]
+
+agent:
+  # The model and its prices are set in configs/local.yaml (not tracked).
+  effort: high
+  max_tokens: 16000
+  # Hard stops per episode, whichever comes first.
+  max_turns: 80
+  max_usd: 5.0

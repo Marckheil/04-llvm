@@ -82,10 +82,13 @@ def build_server(svc: ToolService) -> MCPServer:
         base: Annotated[str, Field(
             description="Standard pipeline to run first: none, O1, O2, O3, Os or Oz. "
                         "'none' runs only `passes`.")] = "O3",
+        rationale: Annotated[str | None, Field(
+            description="One or two sentences: why you expect this pipeline to beat what "
+                        "you have tried so far. Recorded, not used.")] = None,
     ) -> dict:
         """Compile the benchmark with `base` then `passes`. Returns a build_id, compile time,
         code size and the remaining budget. Costs one unit of budget per distinct pipeline."""
-        return svc.compile(benchmark, passes, base)
+        return svc.compile(benchmark, passes, base, rationale)
 
     @mcp.tool()
     def check_correctness(build_id: BuildId) -> dict:
@@ -142,8 +145,9 @@ def main() -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config")
     ap.add_argument("--budget", type=int, help="override episode.compile_budget")
+    ap.add_argument("--log", help="call log path (default results/mcp_calls.jsonl)")
     args = ap.parse_args()
-    svc = ToolService(load_config(args.config), budget=args.budget)
+    svc = ToolService(load_config(args.config), budget=args.budget, log_path=args.log)
     svc.tc.check_version()
     build_server(svc).run()
 

@@ -12,3 +12,6 @@ results/*
 
 # Local-only planning notes.
 04LLVM.md
+
+# Machine/account-specific settings (agent model, prices)
+configs/local.yaml

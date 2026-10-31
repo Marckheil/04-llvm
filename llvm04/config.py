@@ -10,9 +10,25 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CONFIG = REPO_ROOT / "configs" / "default.yaml"
 
 
+LOCAL_CONFIG = REPO_ROOT / "configs" / "local.yaml"
+
+
+def _merge(base: dict, over: dict) -> dict:
+    out = dict(base)
+    for k, v in over.items():
+        out[k] = _merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
+    return out
+
+
 def load_config(path: str | Path | None = None) -> dict:
+    """The config file, overlaid with configs/local.yaml if present (gitignored:
+    machine- or account-specific settings such as the agent's model and prices)."""
     with open(path or DEFAULT_CONFIG) as f:
-        return yaml.safe_load(f)
+        cfg = yaml.safe_load(f)
+    if LOCAL_CONFIG.exists():
+        with open(LOCAL_CONFIG) as f:
+            cfg = _merge(cfg, yaml.safe_load(f) or {})
+    return cfg
 
 
 def repo_path(cfg: dict, key: str) -> Path:

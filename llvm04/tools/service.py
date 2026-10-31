@@ -328,8 +328,12 @@ class ToolService:
         return {"source": what, **self._features[key]}
 
     @tool
-    def compile(self, benchmark: str, passes: list[str], base: str = "O3") -> dict:
-        """Compile `base` followed by `passes`; costs one unit of budget unless already tried."""
+    def compile(self, benchmark: str, passes: list[str], base: str = "O3",
+                rationale: str | None = None) -> dict:
+        """Compile `base` followed by `passes`; costs one unit of budget unless already tried.
+
+        `rationale` (why the agent expects this pipeline to help) is only recorded.
+        """
         self._bench(benchmark)
         pipeline = self._pipeline(base, passes)
         ep = self._episode(benchmark)
@@ -343,7 +347,8 @@ class ToolService:
             ep.tried[build_id] = {"build_id": build_id, "base": base, "passes": list(passes),
                                   "status": b.status, "compile_s": round(b.compile_s, 4),
                                   "text_size": b.text_size,
-                                  "gate": b.gate["status"] if b.gate else None}
+                                  "gate": b.gate["status"] if b.gate else None,
+                                  "rationale": (rationale or "")[:500]}
         budget = {"budget_used": ep.used, "budget_remaining": ep.budget - ep.used,
                   "charged": not repeat}
         if b.status != "OK":
