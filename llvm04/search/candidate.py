@@ -38,8 +38,9 @@ def evaluate(tc: Toolchain, cfg: dict, bench: Benchmark, pipeline: str, out: Pat
              screen_reps: int, slow_cap_s: float) -> Candidate:
     """Build `pipeline` for both variants, gate it, then time it `screen_reps` times.
 
-    A screening run longer than `slow_cap_s` is killed and recorded as None: the
-    candidate is correct but too slow to matter, and waiting for it wastes time.
+    A screening run longer than `slow_cap_s` (whole-process wall time, init
+    included) is killed and recorded as None: the candidate is correct but too
+    slow to matter, and waiting for it wastes time.
     """
     c = Candidate(pipeline)
     try:

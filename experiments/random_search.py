@@ -21,7 +21,8 @@ import numpy as np
 
 from llvm04.bench.machine import preflight_warnings
 from llvm04.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
-from llvm04.bench.timing import run_interleaved, speedup_ci, time_once
+from llvm04 import proc
+from llvm04.bench.timing import parse_polybench_time, run_interleaved, speedup_ci, time_once
 from llvm04.compiler.pipeline import load_passes
 from llvm04.compiler.toolchain import Toolchain
 from llvm04.config import load_config, repo_path
@@ -76,8 +77,11 @@ def main() -> int:
         work = repo_path(cfg, "build_dir") / "search" / bench.name
         o3 = tc.build(bitcode_path(cfg, bench, "time"), "default<O3>", work / "O3")
         time_once(o3.binary, timeout)
-        o3_med = float(np.median([time_once(o3.binary, timeout) for _ in range(3)]))
-        slow_cap = s["slow_cap"] * o3_med
+        o3_runs = [proc.run([o3.binary], timeout) for _ in range(3)]
+        o3_med = float(np.median([parse_polybench_time(r.stdout) for r in o3_runs]))
+        # The cap kills whole processes, so it must scale the whole-process time:
+        # some benchmarks (cholesky, lu, ludcmp) spend longer in init than in the kernel.
+        slow_cap = s["slow_cap"] * float(np.median([r.elapsed_s for r in o3_runs]))
 
         for seed in seeds:
             counts = Counter()
