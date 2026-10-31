@@ -1,0 +1,57 @@
+
+syr2k: per hot-loop iteration, background-corrected, median of 5 reps x 3 groups (fixed counters)
+  event                                   O3      O3+nop    O3+store         win   win-store
+  FIXED_CYCLES                        4.5367      4.5744      3.8462      3.9349      4.6148
+  FIXED_INSTRUCTIONS                 15.0268     16.1277     16.0984     16.1639     15.1826
+  RETIRE_UOP                         15.4668     15.9813     16.1747     16.0963     14.5940
+  ST_MEM_ORDER_VIOL_LD_NONSPEC        0.0004      0.0004      0.0003      0.0003      0.0003
+  MAP_STALL                           2.6140      2.5901      1.7727      1.8241      2.5562
+  MAP_STALL_DISPATCH                  2.5765      2.5023      1.8714      1.9027      2.7055
+  MAP_REWIND                          0.0230      0.0068      0.0207      0.0102      0.0034
+  MAP_DISPATCH_BUBBLE                -0.1143     -0.0811     -0.0658     -0.0532     -0.1103
+  SCHEDULE_EMPTY                     -0.1021     -0.0739     -0.0609     -0.0532     -0.0976
+  FLUSH_RESTART_OTHER_NONSPEC         0.0001      0.0000      0.0000      0.0001      0.0001
+  BRANCH_MISPRED_NONSPEC              0.0000      0.0014      0.0008      0.0004      0.0007
+  L1D_CACHE_MISS_LD                   0.8723      0.8813      0.8584      0.8573      0.8733
+  L1D_CACHE_MISS_ST                   0.3171      0.3230      0.2907      0.2888      0.3171
+  LD_UNIT_UOP                         8.2237      8.2867      8.2979      8.2995      8.2870
+  ST_UNIT_UOP                         1.0065      1.0346      2.0345      2.0586      1.0542
+  LDST_X64_UOP                       -0.0003      0.0002     -0.0000     -0.0001      0.0001
+  L1D_TLB_MISS                        2.0719      2.0708      2.0882      2.0905      2.0743
+  MAP_LDST_UOP                        6.0352      6.1495      7.1025      7.1303      6.1558
+  INST_LDST                           5.9985      6.0100      7.0436      7.1284      6.0641
+  INST_INT_LD                        -0.0036      0.0017      0.0307      0.0161      0.0208
+  INST_SIMD_LD                        5.0011      5.0023      5.0013      5.0091      5.0074
+  MAP_INT_UOP                         4.0660      4.1042      4.1691      4.4995      4.2011
+  MAP_SIMD_UOP                        5.1227      5.1242      5.1265      5.1151      5.1118
+  L1D_CACHE_WRITEBACK                 0.0452      0.0458      0.0461      0.0472      0.0466
+  FETCH_RESTART                       0.0003      0.0010      0.0002      0.0033      0.0041
+
+jacobi-2d: per hot-loop iteration, background-corrected, median of 5 reps x 3 groups (fixed counters)
+  event                                   O3    O3+scofg
+  FIXED_CYCLES                        1.5322      1.0741
+  FIXED_INSTRUCTIONS                  6.3905      5.3051
+  RETIRE_UOP                          6.1862      5.9444
+  ST_MEM_ORDER_VIOL_LD_NONSPEC        0.0000     -0.0000
+  MAP_STALL                           0.6196      0.3372
+  MAP_STALL_DISPATCH                  0.4307      0.1988
+  MAP_REWIND                          0.0017      0.0027
+  MAP_DISPATCH_BUBBLE                -0.0028      0.0046
+  SCHEDULE_EMPTY                     -0.0072     -0.0026
+  FLUSH_RESTART_OTHER_NONSPEC         0.0000      0.0000
+  BRANCH_MISPRED_NONSPEC              0.0011      0.0007
+  L1D_CACHE_MISS_LD                   0.1444      0.1218
+  L1D_CACHE_MISS_ST                   0.5870      0.6002
+  LD_UNIT_UOP                         2.3140      2.2740
+  ST_UNIT_UOP                         0.6697      0.6332
+  LDST_X64_UOP                        0.4999      0.4994
+  L1D_TLB_MISS                        0.0062      0.0058
+  MAP_LDST_UOP                        2.7075      2.6635
+  INST_LDST                           2.6471      1.8842
+  INST_INT_LD                         0.0116      0.0017
+  INST_SIMD_LD                        2.1298      1.6303
+  MAP_INT_UOP                         1.2064      0.9013
+  MAP_SIMD_UOP                        2.5292      2.5285
+  L1D_CACHE_WRITEBACK                 0.0351      0.0003
+  FETCH_RESTART                       0.0016      0.0005
+-> /Users/donmarckheildesmond/04-llvm/results/pmc_probe.csv
