@@ -52,6 +52,7 @@ class AgentConfig:
     max_usd: float = 5.0
     max_nudges: int = 2
     fallbacks: bool = True
+    min_compiles: int = 0  # submit is refused until this much compile budget is spent (D15)
 
 
 @dataclass
@@ -84,9 +85,14 @@ def _dump(block: Any) -> Any:
     return block.model_dump(mode="json") if hasattr(block, "model_dump") else block
 
 
-async def _check_submission(backend: Backend, benchmark: str, build_id: str) -> str | None:
+async def _check_submission(backend: Backend, benchmark: str, build_id: str,
+                            min_compiles: int = 0) -> str | None:
     """None if `build_id` is a gated build of this episode, else the reason it is not."""
     hist = await backend.call("get_history", {"benchmark": benchmark})
+    used = hist.get("budget_used", 0)
+    if used < min_compiles:
+        return (f"submit is accepted only after {min_compiles} compiles; you have used {used}, "
+                f"so {min_compiles - used} remain. Keep exploring.")
     entry = next((c for c in hist.get("candidates", []) if c["build_id"] == build_id), None)
     if entry is None:
         return f"{build_id!r} was not compiled in this episode"
@@ -100,7 +106,8 @@ async def run_episode(client: Any, backend: Backend, benchmark: str, budget: int
     res = EpisodeResult(benchmark)
     t0 = time.perf_counter()
     tools = [*await backend.schemas(), SUBMIT]
-    messages: list[dict] = [{"role": "user", "content": prompts.task(benchmark, budget)}]
+    messages: list[dict] = [{"role": "user",
+                             "content": prompts.task(benchmark, budget, cfg.min_compiles)}]
     nudges = 0
 
     def log(rec: dict) -> None:
@@ -158,7 +165,8 @@ async def run_episode(client: Any, backend: Backend, benchmark: str, budget: int
                                               "message": prompts.TRUNCATED}}
             elif call.name == "submit":
                 args = call.input if isinstance(call.input, dict) else {}
-                why = await _check_submission(backend, benchmark, str(args.get("build_id")))
+                why = await _check_submission(backend, benchmark, str(args.get("build_id")),
+                                              cfg.min_compiles)
                 if why:
                     out = {"ok": False, "error": {"code": "INVALID_ARGUMENT", "message": why}}
                 else:

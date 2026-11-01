@@ -76,7 +76,7 @@ class FakeBackend:
             self.history.append({"build_id": "b1", "gate": "PASS"})
             return {"ok": True, "build_id": "b1"}
         if name == "get_history":
-            return {"ok": True, "candidates": self.history}
+            return {"ok": True, "candidates": self.history, "budget_used": len(self.history)}
         return {"ok": False, "error": {"code": "INVALID_ARGUMENT", "message": "unknown"}}
 
 
@@ -111,6 +111,18 @@ def test_submission_must_be_a_gated_build_of_this_episode():
     rejected = client.requests[1]["messages"][2]["content"][0]
     assert rejected["is_error"] and "not compiled" in rejected["content"]
     assert res.stop == "submitted" and res.errors["INVALID_ARGUMENT"] == 1
+
+
+def test_submit_refused_until_min_compiles():
+    client = FakeClient([Resp([tool("compile", 1, passes=[])]),
+                         Resp([tool("submit", 2, build_id="b1", summary="")]),
+                         Resp([tool("compile", 3, passes=["licm"])]),
+                         Resp([tool("submit", 4, build_id="b1", summary="")])])
+    res = run(client, FakeBackend(), cfg(min_compiles=2))
+    assert "used 2 compiles" in client.requests[0]["messages"][0]["content"]
+    refused = client.requests[2]["messages"][-1]["content"][0]
+    assert refused["is_error"] and "1 remain" in refused["content"]
+    assert res.stop == "submitted" and res.turns == 4
 
 
 def test_errors_are_counted_and_passed_back():

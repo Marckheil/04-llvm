@@ -87,9 +87,9 @@ async def main_async(args) -> int:
         print("set agent.model and agent.price in configs/local.yaml", file=sys.stderr)
         return 2
     acfg = AgentConfig(model=a["model"], price=a["price"], effort=args.effort or a["effort"],
-                       max_tokens=a["max_tokens"], max_turns=a["max_turns"],
+                       max_tokens=a["max_tokens"], max_turns=args.max_turns or a["max_turns"],
                        max_usd=args.max_usd or a["max_usd"],
-                       fallbacks=a.get("fallbacks", True))
+                       fallbacks=a.get("fallbacks", True), min_compiles=args.min_compiles)
     budget = args.budget or cfg["episode"]["compile_budget"]
     seeds = args.seeds if args.seeds is not None else cfg["seeds"]
     tc = Toolchain(cfg)
@@ -146,6 +146,9 @@ def main() -> int:
     ap.add_argument("--profile", help="an agent.profiles entry in configs/local.yaml")
     ap.add_argument("--effort", help="override agent.effort")
     ap.add_argument("--max-usd", type=float, help="per-episode cap (default agent.max_usd)")
+    ap.add_argument("--max-turns", type=int, help="override agent.max_turns")
+    ap.add_argument("--min-compiles", type=int, default=0,
+                    help="refuse submit until this many compiles are used (D15)")
     ap.add_argument("--total-usd", type=float, help="stop starting episodes past this spend")
     ap.add_argument("--out", default="agent")
     return asyncio.run(main_async(ap.parse_args()))

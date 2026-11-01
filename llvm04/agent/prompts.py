@@ -38,9 +38,12 @@ independently afterwards, so claims are checked.
 """
 
 
-def task(benchmark: str, budget: int) -> str:
-    return (f"Benchmark: {benchmark}. Compile budget: {budget}. "
-            "Find the fastest correct pipeline and submit it.")
+def task(benchmark: str, budget: int, min_compiles: int = 0) -> str:
+    t = (f"Benchmark: {benchmark}. Compile budget: {budget}. "
+         "Find the fastest correct pipeline and submit it.")
+    if min_compiles:
+        t += f" submit is accepted only after you have used {min_compiles} compiles."
+    return t
 
 
 NUDGE = ("You ended your turn without calling submit. If budget remains and you have "
