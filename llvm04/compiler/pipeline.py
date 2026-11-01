@@ -12,8 +12,12 @@ _WRAP = {
     "module": "{}",
     "cgscc": "cgscc({})",
     "function": "function({})",
-    "loop": "function(loop-mssa({}))",
+    "loop_mssa": "function(loop-mssa({}))",
+    "loop": "function(loop({}))",
 }
+# Spelled as clang's own pipelines spell them (D15): plain `instcombine` verifies that
+# it reached a fixpoint and aborts the compile when it did not.
+_SPELL = {"instcombine": "instcombine<no-verify-fixpoint>"}
 
 
 class InvalidPipeline(ValueError):
@@ -25,7 +29,7 @@ class InvalidPipeline(ValueError):
 
 
 def load_passes(path: str | Path | None = None) -> dict[str, str]:
-    """Pass name -> kind (module, cgscc, function, loop)."""
+    """Pass name -> kind (module, cgscc, function, loop_mssa, loop)."""
     with open(path or DEFAULT_PASSES) as f:
         spec = yaml.safe_load(f)
     return {name: kind for kind, names in spec.items() for name in names}
@@ -37,5 +41,5 @@ def render(names: list[str], passes: dict[str, str]) -> str:
     for name in names:
         if name not in passes:
             raise InvalidPipeline(name, difflib.get_close_matches(name, passes, n=3))
-        out.append(_WRAP[passes[name]].format(name))
+        out.append(_WRAP[passes[name]].format(_SPELL.get(name, name)))
     return ",".join(out)

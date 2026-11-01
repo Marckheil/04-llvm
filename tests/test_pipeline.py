@@ -3,6 +3,7 @@ import random
 import pytest
 
 from llvm04 import proc
+from llvm04.bench.polybench import bitcode_path, list_benchmarks
 from llvm04.compiler.pipeline import InvalidPipeline, load_passes, render
 from llvm04.compiler.toolchain import Toolchain
 from llvm04.config import load_config
@@ -14,6 +15,29 @@ PASSES = load_passes()
 def test_render_nests_each_pass_at_its_level():
     s = render(["sroa", "licm", "inline", "globalopt"], PASSES)
     assert s == "function(sroa),function(loop-mssa(licm)),cgscc(inline),globalopt"
+
+
+def test_loop_passes_nest_like_o3_and_instcombine_skips_fixpoint_check():
+    s = render(["licm", "loop-unroll-full", "instcombine"], PASSES)
+    assert s == ("function(loop-mssa(licm)),function(loop(loop-unroll-full)),"
+                 "function(instcombine<no-verify-fixpoint>)")
+
+
+@pytest.mark.parametrize("bench,passes", [
+    # Scratch-arm candidates that aborted before D15: MemorySSA not preserved, and
+    # InstCombine's fixpoint check.
+    ("trmm", ["separate-const-offset-from-gep", "rpo-function-attrs", "gvn", "licm",
+              "mergefunc", "loop-unroll-full"]),
+    ("heat-3d", ["loop-unroll-full", "mergefunc", "instcombine", "dce", "partial-inliner",
+                 "loop-versioning-licm", "inline"]),
+])
+def test_former_action_space_aborts_now_compile(bench, passes, tmp_path):
+    cfg = load_config()
+    tc = Toolchain(cfg)
+    bc = next((b for b in list_benchmarks(cfg) if b.name == bench), None)
+    if bc is None or not bitcode_path(cfg, bc, "time").exists():
+        pytest.skip("benchmark bitcode not built")
+    tc.opt(bitcode_path(cfg, bc, "time"), tmp_path / "o.bc", render(passes, PASSES))
 
 
 def test_unknown_pass_suggests_close_names():

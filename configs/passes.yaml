@@ -1,7 +1,10 @@
 # Curated action space: passes a pipeline may contain (docs/decisions.md D9).
 # kind decides how a pass is nested in the pipeline string:
 #   module -> name   cgscc -> cgscc(name)   function -> function(name)
-#   loop   -> function(loop-mssa(name))
+#   loop_mssa -> function(loop-mssa(name))   loop -> function(loop(name))
+# Loop passes are split the way default<O3> nests them (D15): a loop pass manager with
+# MemorySSA aborts if any of its passes does not preserve it (loop-unroll-full), and
+# licm requires it.
 # Every name was checked against the pinned LLVM (tests/test_pipeline.py).
 module:
   - globalopt
@@ -65,15 +68,16 @@ function:
   - loop-unroll-and-jam
   - loop-versioning-licm
   - loop-flatten
-loop:
+loop_mssa:
   - licm
   - loop-rotate
-  - loop-deletion
-  - loop-idiom
   - loop-instsimplify
-  - indvars
-  - loop-interchange
   - simple-loop-unswitch
   - loop-simplifycfg
+loop:
+  - loop-deletion
+  - loop-idiom
+  - indvars
+  - loop-interchange
   - loop-unroll-full
   - loop-bound-split
