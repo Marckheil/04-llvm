@@ -1,0 +1,23 @@
+benchmark,o3_suffix_median_speedup,o3_suffix_verdicts,scratch_median_speedup,scratch_verdicts,large_median_speedup,large_verdicts,small_median_speedup,small_verdicts
+2mm,0.998,TIE:3,1.004,TIE:2 WIN:1,-,,1.001,TIE:3
+3mm,1.000,TIE:3,1.001,TIE:3,-,,1.000,TIE:3
+adi,1.000,TIE:3,0.866,SLOWER:3,1.001,TIE:3,0.998,TIE:3
+cholesky,1.000,TIE:3,0.999,TIE:3,-,,1.000,TIE:3
+correlation,0.999,LAYOUT_ONLY:1 TIE:2,0.997,TIE:3,-,,1.000,TIE:3
+covariance,1.000,TIE:3,1.001,TIE:3,-,,1.001,TIE:2 WIN:1
+deriche,1.007,LAYOUT_ONLY:1 TIE:2,0.976,SLOWER:2 TIE:1,-,,1.007,LAYOUT_ONLY:1 TIE:2
+doitgen,0.998,TIE:3,1.000,TIE:3,-,,0.998,TIE:3
+fdtd-2d,1.002,TIE:3,0.997,SLOWER:1 TIE:2,-,,1.004,TIE:3
+floyd-warshall,0.998,TIE:3,1.009,WIN:3,1.144,WIN:3,1.009,WIN:3
+gemm,0.998,TIE:3,0.998,SLOWER:1 TIE:2,1.003,TIE:3,1.004,TIE:3
+gramschmidt,1.002,TIE:3,1.001,TIE:3,-,,1.001,TIE:3
+heat-3d,1.002,TIE:3,0.998,SLOWER:2 TIE:1,1.000,SLOWER:1 TIE:2,0.998,TIE:3
+jacobi-2d,1.242,WIN:3,1.239,WIN:3,1.003,TIE:2 WIN:1,1.248,WIN:3
+lu,1.000,TIE:3,0.998,SLOWER:1 TIE:2,-,,1.001,LAYOUT_ONLY:1 TIE:2
+ludcmp,0.998,TIE:3,1.011,TIE:1 WIN:2,-,,1.000,TIE:3
+nussinov,0.999,TIE:3,0.953,NO_CANDIDATE:1 SLOWER:2,-,,0.996,TIE:3
+seidel-2d,1.000,TIE:3,0.797,SLOWER:3,-,,1.002,TIE:3
+symm,1.000,TIE:3,1.002,LAYOUT_ONLY:1 TIE:2,-,,0.998,TIE:3
+syr2k,0.997,TIE:3,1.176,WIN:3,1.000,TIE:3,1.004,TIE:3
+syrk,1.001,TIE:2 WIN:1,1.025,WIN:3,-,,0.997,TIE:3
+trmm,1.000,TIE:3,0.998,TIE:3,-,,1.001,TIE:3

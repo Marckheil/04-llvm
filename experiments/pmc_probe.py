@@ -7,6 +7,10 @@ the binary as the calling user, and prints system-wide event deltas.
 Binaries (built earlier by syr2k_store_probe.py and gep_opt_sweep.py):
   syr2k      O3, O3+nop, O3+store, win, win-store
   jacobi-2d  O3, O3+scofg
+Cases with "pipelines" are built here instead, into build/pmc/<case>/ (D14: the
+minimal agent pipelines from experiments/pipeline_ablation.py):
+  jacobi-2d-lean  O3, O3+scofg, lean (sroa indvars loop-vectorize)
+  floyd-warshall  O3, lean (8 passes, below)
 Per event group and rep, the binaries run interleaved (ABBA), and a control
 `/bin/sleep T` (T = that benchmark's O3 run time) measures the background rate,
 which is subtracted per second of each run. Counts are then divided by the number
@@ -48,7 +52,33 @@ CASES = {
               "iters": 1000 * 1200 * 1201 // 2},
     "jacobi-2d": {"dir": "gep_opt/jacobi-2d", "bins": ["O3", "O3+scofg"],
                   "iters": 2 * 500 * 1298 * 1298},
+    "jacobi-2d-lean": {"bench": "jacobi-2d", "iters": 2 * 500 * 1298 * 1298, "pipelines": {
+        "O3": "default<O3>",
+        "O3+scofg": ("O3", ["separate-const-offset-from-gep"]),
+        "lean": ("none", ["sroa", "indvars", "loop-vectorize"])}},
+    "floyd-warshall": {"bench": "floyd-warshall", "iters": 2800 ** 3, "pipelines": {
+        "O3": "default<O3>",
+        "lean": ("none", ["sroa", "early-cse<memssa>", "simplifycfg", "loop-rotate", "licm",
+                          "loop-unroll", "instcombine", "licm"])}},
 }
+
+
+def build_case(cfg: dict, name: str, spec: dict) -> dict[str, str]:
+    from llvm04.bench.polybench import bitcode_path, list_benchmarks
+    from llvm04.compiler.pipeline import load_passes, render
+    from llvm04.compiler.toolchain import Toolchain
+    from llvm04.tools.service import BASES
+
+    tc, known = Toolchain(cfg), load_passes()
+    bench = next(b for b in list_benchmarks(cfg) if b.name == spec["bench"])
+    bins = {}
+    for b, p in spec["pipelines"].items():
+        if not isinstance(p, str):
+            p = ",".join(x for x in (BASES[p[0]], render(p[1], known)) if x)
+        out = tc.build(bitcode_path(cfg, bench, "time"), p,
+                       repo_path(cfg, "build_dir") / "pmc" / name / b)
+        bins[b] = str(out.binary)
+    return bins
 
 
 def pmc(events: list[str], cmd: list[str]) -> tuple[dict[str, int], float]:
@@ -70,6 +100,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--reps", type=int, default=5)
+    ap.add_argument("--case", nargs="*", choices=list(CASES), help="default: all")
     ap.add_argument("--out", default="pmc_probe")
     args = ap.parse_args()
     cfg = load_config()
@@ -77,7 +108,10 @@ def main() -> int:
     raw_f = open(results / f"{args.out}_raw.jsonl", "w")
     rows = []
     for case, spec in CASES.items():
-        bins = {b: str(build / spec["dir"] / b) for b in spec["bins"]}
+        if args.case and case not in args.case:
+            continue
+        bins = (build_case(cfg, case, spec) if "pipelines" in spec
+                else {b: str(build / spec["dir"] / b) for b in spec["bins"]})
         # Warm up and size the control. (A fixed-counters-only config is rejected.)
         _, t_o3 = pmc(FIXED + ["MAP_STALL"], [bins["O3"]])
         _, t_o3 = pmc(FIXED + ["MAP_STALL"], [bins["O3"]])

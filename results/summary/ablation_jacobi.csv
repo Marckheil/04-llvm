@@ -1,0 +1,16 @@
+benchmark,step,removed,kept,gate,speedup_vs_O3,ci_lo,ci_hi,passes
+jacobi-2d,0,,True,PASS,1.242775387458906,1.21115980209946,1.2544122480489799,sroa early-cse loop-simplify lcssa loop-rotate licm indvars loop-vectorize loop-unroll instcombine simplifycfg gvn dce
+jacobi-2d,1,dce,True,PASS,1.2527380205083662,1.2245684058577324,1.2942516266923574,sroa early-cse loop-simplify lcssa loop-rotate licm indvars loop-vectorize loop-unroll instcombine simplifycfg gvn
+jacobi-2d,2,gvn,True,PASS,1.2447535196453772,1.2037152103559872,1.2645078998397468,sroa early-cse loop-simplify lcssa loop-rotate licm indvars loop-vectorize loop-unroll instcombine simplifycfg
+jacobi-2d,3,simplifycfg,True,PASS,1.2395524554594626,1.1902919102920568,1.3122230541209547,sroa early-cse loop-simplify lcssa loop-rotate licm indvars loop-vectorize loop-unroll instcombine
+jacobi-2d,4,instcombine,True,PASS,1.2376990255072156,1.2227874680046595,1.3137870569709327,sroa early-cse loop-simplify lcssa loop-rotate licm indvars loop-vectorize loop-unroll
+jacobi-2d,5,loop-unroll,True,PASS,1.254792009841341,1.2360615005266233,1.472717254679133,sroa early-cse loop-simplify lcssa loop-rotate licm indvars loop-vectorize
+jacobi-2d,6,loop-vectorize,False,PASS,0.7218620089058316,0.7089525740712618,0.7525635759159149,sroa early-cse loop-simplify lcssa loop-rotate licm indvars
+jacobi-2d,7,indvars,False,PASS,1.154038411407878,1.1378647419844463,1.3600699606163298,sroa early-cse loop-simplify lcssa loop-rotate licm loop-vectorize
+jacobi-2d,8,licm,True,PASS,1.2437926272745703,1.2307516689909193,1.2523665107831663,sroa early-cse loop-simplify lcssa loop-rotate indvars loop-vectorize
+jacobi-2d,9,loop-rotate,True,PASS,1.2466211239772502,1.235979443359004,1.2545158484341665,sroa early-cse loop-simplify lcssa indvars loop-vectorize
+jacobi-2d,10,lcssa,True,PASS,1.2387915569296537,1.2109660087310172,1.2675674644070385,sroa early-cse loop-simplify indvars loop-vectorize
+jacobi-2d,11,loop-simplify,True,PASS,1.2561995851578704,1.2258591704509463,1.292041176922486,sroa early-cse indvars loop-vectorize
+jacobi-2d,12,early-cse,True,PASS,1.2628981227589116,1.2254850361295153,1.2790914843435408,sroa indvars loop-vectorize
+jacobi-2d,13,sroa,False,PASS,0.18020641471639065,0.17711823604908575,0.18251456910165686,indvars loop-vectorize
+jacobi-2d,14,,True,PASS/final,1.251259605695341,1.2396854063278402,1.2625018269090238,sroa indvars loop-vectorize
