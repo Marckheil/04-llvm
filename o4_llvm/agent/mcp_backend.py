@@ -11,12 +11,12 @@ from contextlib import AsyncExitStack
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from llvm04.config import REPO_ROOT
+from o4_llvm.config import REPO_ROOT
 
 
 class McpBackend:
     def __init__(self, budget: int, config: str | None = None, log: str | None = None):
-        args = ["-m", "llvm04.tools.server", "--budget", str(budget)]
+        args = ["-m", "o4_llvm.tools.server", "--budget", str(budget)]
         if config:
             args += ["--config", config]
         if log:

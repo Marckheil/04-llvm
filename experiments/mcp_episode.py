@@ -1,6 +1,6 @@
 """Drive one tuning episode by hand through the MCP server (Phase 2 "done when").
 
-Starts `python -m llvm04.tools.server` as a subprocess and talks to it over stdio
+Starts `python -m o4_llvm.tools.server` as a subprocess and talks to it over stdio
 with the official MCP client, exactly as an agent would. The script plays the
 agent on jacobi-2d: look at the benchmark, read O3's missed-optimization remarks,
 make a typo (rejected for free), compile the fix found in Phase 1, gate it, time
@@ -17,7 +17,7 @@ import time
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from llvm04.config import REPO_ROOT, load_config, repo_path
+from o4_llvm.config import REPO_ROOT, load_config, repo_path
 
 BENCH = "jacobi-2d"
 
@@ -35,7 +35,7 @@ def brief(d, width=150) -> str:
 
 
 async def episode(log) -> int:
-    params = StdioServerParameters(command=sys.executable, args=["-m", "llvm04.tools.server"],
+    params = StdioServerParameters(command=sys.executable, args=["-m", "o4_llvm.tools.server"],
                                    cwd=str(REPO_ROOT))
     async with stdio_client(params) as streams, ClientSession(*streams) as s:
         init = await s.initialize()

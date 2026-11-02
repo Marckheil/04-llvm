@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from llvm04.config import REPO_ROOT
+from o4_llvm.config import REPO_ROOT
 
 DEFAULT_PASSES = REPO_ROOT / "configs" / "passes.yaml"
 _WRAP = {

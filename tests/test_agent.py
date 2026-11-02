@@ -3,9 +3,9 @@ import io
 import json
 from dataclasses import dataclass, field
 
-from llvm04.agent import prompts
-from llvm04.agent.loop import AgentConfig, run_episode
-from llvm04.agent.mcp_backend import McpBackend
+from o4_llvm.agent import prompts
+from o4_llvm.agent.loop import AgentConfig, run_episode
+from o4_llvm.agent.mcp_backend import McpBackend
 
 PRICE = {"input": 4.0, "output": 20.0, "cache_write": 5.0, "cache_read": 0.2}
 

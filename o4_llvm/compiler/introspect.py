@@ -11,7 +11,7 @@ from pathlib import Path
 
 import yaml
 
-from llvm04.compiler.toolchain import Toolchain
+from o4_llvm.compiler.toolchain import Toolchain
 
 REMARK_KINDS = {"Passed": "passed", "Missed": "missed", "Analysis": "analysis",
                 "AnalysisFPCommute": "analysis", "AnalysisAliasing": "analysis",

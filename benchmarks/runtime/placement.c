@@ -13,7 +13,7 @@
 // result with a few salts shows whether it depends on layout.
 //
 // LLVM04_DUMP_DIR=<dir> writes every block's final bytes to <dir>/block<i>.bin at
-// exit. The correctness gate (llvm04/bench/correctness.py) compares them at full
+// exit. The correctness gate (o4_llvm/bench/correctness.py) compares them at full
 // precision, which is far stricter than PolyBench's 2-decimal array dump.
 #include <malloc/malloc.h>
 #include <stdint.h>

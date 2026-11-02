@@ -17,13 +17,13 @@ import sys
 
 import numpy as np
 
-from llvm04.bench import correctness
-from llvm04.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
-from llvm04.bench.timing import run_interleaved, speedup_ci
-from llvm04.compiler.pipeline import load_passes, render
-from llvm04.compiler.toolchain import CompileError, Toolchain
-from llvm04.config import load_config, repo_path
-from llvm04.tools.service import BASES
+from o4_llvm.bench import correctness
+from o4_llvm.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
+from o4_llvm.bench.timing import run_interleaved, speedup_ci
+from o4_llvm.compiler.pipeline import load_passes, render
+from o4_llvm.compiler.toolchain import CompileError, Toolchain
+from o4_llvm.config import load_config, repo_path
+from o4_llvm.tools.service import BASES
 
 FIELDS = ["benchmark", "step", "removed", "kept", "gate", "speedup_vs_O3", "ci_lo", "ci_hi",
           "passes"]

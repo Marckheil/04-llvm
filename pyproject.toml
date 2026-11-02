@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "04llvm"
+name = "o4-llvm"
 version = "0.1.0"
-description = "Agentic LLVM pass-pipeline autotuner"
+description = "o4-llvm: an LLM agent that tunes LLVM pass pipelines, measured against random search"
 requires-python = ">=3.11"
 dependencies = [
   "mcp>=2.3,<3",
@@ -18,7 +18,7 @@ dependencies = [
 dev = ["pytest>=8"]
 
 [tool.setuptools.packages.find]
-include = ["llvm04*"]
+include = ["o4_llvm*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

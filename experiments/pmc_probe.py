@@ -30,7 +30,7 @@ from collections import defaultdict
 
 import numpy as np
 
-from llvm04.config import load_config, repo_path
+from o4_llvm.config import load_config, repo_path
 
 PMC_RUN = "/usr/local/libexec/llvm04/pmc_run"
 FIXED = ["FIXED_CYCLES", "FIXED_INSTRUCTIONS"]
@@ -64,10 +64,10 @@ CASES = {
 
 
 def build_case(cfg: dict, name: str, spec: dict) -> dict[str, str]:
-    from llvm04.bench.polybench import bitcode_path, list_benchmarks
-    from llvm04.compiler.pipeline import load_passes, render
-    from llvm04.compiler.toolchain import Toolchain
-    from llvm04.tools.service import BASES
+    from o4_llvm.bench.polybench import bitcode_path, list_benchmarks
+    from o4_llvm.compiler.pipeline import load_passes, render
+    from o4_llvm.compiler.toolchain import Toolchain
+    from o4_llvm.tools.service import BASES
 
     tc, known = Toolchain(cfg), load_passes()
     bench = next(b for b in list_benchmarks(cfg) if b.name == spec["bench"])

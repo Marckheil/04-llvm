@@ -1,6 +1,6 @@
 import pytest
 
-from llvm04.bench.timing import RunError, cv, parse_polybench_time, speedup_ci
+from o4_llvm.bench.timing import RunError, cv, parse_polybench_time, speedup_ci
 
 
 def test_parse_polybench_time_takes_last_line():

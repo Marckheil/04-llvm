@@ -24,11 +24,11 @@ import sys
 
 import numpy as np
 
-from llvm04.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
-from llvm04.bench.timing import run_interleaved, speedup_ci
-from llvm04.compiler.pipeline import load_passes, render
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import load_config, repo_path
+from o4_llvm.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
+from o4_llvm.bench.timing import run_interleaved, speedup_ci
+from o4_llvm.compiler.pipeline import load_passes, render
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import load_config, repo_path
 
 
 def hot_loop(lines: list[str]) -> tuple[int, int]:

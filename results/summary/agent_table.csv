@@ -1,4 +1,4 @@
-benchmark,o3_suffix_median_speedup,o3_suffix_verdicts,scratch_median_speedup,scratch_verdicts,large_median_speedup,large_verdicts,small_median_speedup,small_verdicts
+benchmark,o3_suffix_median_speedup,o3_suffix_verdicts,scratch_median_speedup,scratch_verdicts,opus-5.5_median_speedup,opus-5.5_verdicts,haiku-5.5_median_speedup,haiku-5.5_verdicts
 2mm,0.998,TIE:3,1.004,TIE:2 WIN:1,-,,1.001,TIE:3
 3mm,1.000,TIE:3,1.001,TIE:3,-,,1.000,TIE:3
 adi,1.000,TIE:3,0.866,SLOWER:3,1.001,TIE:3,0.998,TIE:3

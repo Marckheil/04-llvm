@@ -11,12 +11,12 @@ import copy
 import re
 import sys
 
-from llvm04.bench.machine import preflight_warnings
-from llvm04.bench.polybench import build_bitcode, list_benchmarks
-from llvm04.bench.timing import time_once
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import DEFAULT_CONFIG, load_config, repo_path
-from llvm04.proc import ProcTimeout
+from o4_llvm.bench.machine import preflight_warnings
+from o4_llvm.bench.polybench import build_bitcode, list_benchmarks
+from o4_llvm.bench.timing import time_once
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import DEFAULT_CONFIG, load_config, repo_path
+from o4_llvm.proc import ProcTimeout
 
 SIZES = ["SMALL_DATASET", "MEDIUM_DATASET", "LARGE_DATASET", "EXTRALARGE_DATASET"]
 

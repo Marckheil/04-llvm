@@ -19,7 +19,7 @@ import sys
 from collections import Counter, defaultdict
 from statistics import mean, median
 
-from llvm04.config import load_config, repo_path
+from o4_llvm.config import load_config, repo_path
 
 MODES = ["o3_suffix", "scratch"]
 MATERIAL = 1.03
@@ -85,7 +85,7 @@ def main() -> int:
     lines = ["# Phase 3 results", "",
              "Median confirmed speedup vs `default<O3>` over seeds, then verdict counts, per arm. "
              "Random-search arms: " + ", ".join(randoms) + ". All arms: 30-compile "
-             "budget, the same confirmation protocol (llvm04/search/confirm.py).", "",
+             "budget, the same confirmation protocol (o4_llvm/search/confirm.py).", "",
              "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
     lines += ["| " + " | ".join(r[h] for h in head) + " |" for r in table]
 

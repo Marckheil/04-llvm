@@ -4,10 +4,10 @@ import random
 from collections.abc import Callable
 from pathlib import Path
 
-from llvm04.bench.polybench import Benchmark
-from llvm04.compiler.pipeline import render
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.search.candidate import OK, Candidate, evaluate
+from o4_llvm.bench.polybench import Benchmark
+from o4_llvm.compiler.pipeline import render
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.search.candidate import OK, Candidate, evaluate
 
 
 def sample_pipeline(rng: random.Random, passes: dict[str, str], min_len: int,

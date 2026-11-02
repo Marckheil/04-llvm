@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from llvm04 import proc
+from o4_llvm import proc
 
 
 def test_run_captures_output():

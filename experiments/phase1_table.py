@@ -13,7 +13,7 @@ import sys
 from collections import Counter, defaultdict
 from statistics import median
 
-from llvm04.config import load_config, repo_path
+from o4_llvm.config import load_config, repo_path
 
 MODES = ["o3_suffix", "scratch"]
 

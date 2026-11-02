@@ -13,11 +13,11 @@ import re
 import struct
 import sys
 
-from llvm04 import proc
-from llvm04.bench import correctness
-from llvm04.bench.polybench import bitcode_path, list_benchmarks
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import load_config, repo_path
+from o4_llvm import proc
+from o4_llvm.bench import correctness
+from o4_llvm.bench.polybench import bitcode_path, list_benchmarks
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import load_config, repo_path
 
 
 def nudge_first_double(ir: str) -> str:

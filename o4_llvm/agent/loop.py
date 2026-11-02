@@ -17,7 +17,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any, Protocol, TextIO
 
-from llvm04.agent import prompts
+from o4_llvm.agent import prompts
 
 SUBMIT = {
     "name": "submit",

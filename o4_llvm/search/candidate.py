@@ -7,11 +7,11 @@ OK, COMPILE_ERROR, TIMEOUT, MISCOMPILE, CRASH.
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from llvm04 import proc
-from llvm04.bench import correctness
-from llvm04.bench.polybench import Benchmark, bitcode_path
-from llvm04.bench.timing import RunError, time_once
-from llvm04.compiler.toolchain import CompileError, Toolchain
+from o4_llvm import proc
+from o4_llvm.bench import correctness
+from o4_llvm.bench.polybench import Benchmark, bitcode_path
+from o4_llvm.bench.timing import RunError, time_once
+from o4_llvm.compiler.toolchain import CompileError, Toolchain
 
 OK, COMPILE_ERROR, TIMEOUT = "OK", "COMPILE_ERROR", "TIMEOUT"
 

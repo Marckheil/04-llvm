@@ -14,7 +14,7 @@ from pathlib import Path
 
 import numpy as np
 
-from llvm04.bench.timing import run_interleaved, speedup_ci
+from o4_llvm.bench.timing import run_interleaved, speedup_ci
 
 
 def confirm(cfg: dict, best: Path, o3: Path, seed: int) -> tuple[dict, list[dict]]:

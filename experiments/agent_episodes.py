@@ -2,7 +2,7 @@
 
 Per benchmark and seed: start a fresh MCP server (fresh compile budget), let the
 agent search and submit, then independently confirm its final build with the same
-protocol as random search (llvm04/search/confirm.py: 7 interleaved runs against
+protocol as random search (o4_llvm/search/confirm.py: 7 interleaved runs against
 default<O3>, bootstrap CI, every layout salt). The agent's own measurements never
 enter the reported number. If it never submits, its best gated, timed build from the
 episode history is confirmed instead (final_source says which).
@@ -21,13 +21,13 @@ import sys
 
 import anthropic
 
-from llvm04.agent.loop import AgentConfig, run_episode
-from llvm04.agent.mcp_backend import McpBackend
-from llvm04.bench.machine import preflight_warnings
-from llvm04.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import load_config, repo_path
-from llvm04.search.confirm import confirm
+from o4_llvm.agent.loop import AgentConfig, run_episode
+from o4_llvm.agent.mcp_backend import McpBackend
+from o4_llvm.bench.machine import preflight_warnings
+from o4_llvm.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import load_config, repo_path
+from o4_llvm.search.confirm import confirm
 
 FIELDS = ["benchmark", "seed", "verdict", "speedup_vs_O3", "ci_lo", "ci_hi",
           "layout_min_ratio", "final_source", "agent_claimed_speedup", "best_base",

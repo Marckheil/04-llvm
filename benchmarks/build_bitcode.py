@@ -3,9 +3,9 @@
 import argparse
 import sys
 
-from llvm04.bench.polybench import VARIANTS, build_bitcode, list_benchmarks
-from llvm04.compiler.toolchain import CompileError, Toolchain
-from llvm04.config import load_config
+from o4_llvm.bench.polybench import VARIANTS, build_bitcode, list_benchmarks
+from o4_llvm.compiler.toolchain import CompileError, Toolchain
+from o4_llvm.config import load_config
 
 
 def main() -> int:

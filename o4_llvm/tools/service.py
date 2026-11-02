@@ -28,15 +28,15 @@ from pathlib import Path
 
 import numpy as np
 
-from llvm04 import proc
-from llvm04.bench import correctness
-from llvm04.bench.polybench import bitcode_path, build_bitcode, defines, list_benchmarks
-from llvm04.bench.timing import RunError, run_interleaved, speedup_ci
-from llvm04.compiler import introspect
-from llvm04.compiler.pipeline import InvalidPipeline, load_passes, render
-from llvm04.compiler.toolchain import CompileError, Toolchain
-from llvm04.config import REPO_ROOT, repo_path
-from llvm04.features.ir import ir_features
+from o4_llvm import proc
+from o4_llvm.bench import correctness
+from o4_llvm.bench.polybench import bitcode_path, build_bitcode, defines, list_benchmarks
+from o4_llvm.bench.timing import RunError, run_interleaved, speedup_ci
+from o4_llvm.compiler import introspect
+from o4_llvm.compiler.pipeline import InvalidPipeline, load_passes, render
+from o4_llvm.compiler.toolchain import CompileError, Toolchain
+from o4_llvm.config import REPO_ROOT, repo_path
+from o4_llvm.features.ir import ir_features
 
 ERROR_CODES = ("INVALID_ARGUMENT", "INVALID_PIPELINE", "COMPILE_ERROR", "MISCOMPILE", "CRASH",
                "TIMEOUT", "RESOURCE_LIMIT", "BUDGET_EXCEEDED", "INTERNAL")

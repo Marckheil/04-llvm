@@ -3,8 +3,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import repo_path
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import repo_path
 
 VARIANTS = ("time", "check")
 

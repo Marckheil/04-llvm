@@ -20,10 +20,10 @@ from pathlib import Path
 
 import numpy as np
 
-from llvm04 import proc
-from llvm04.bench.polybench import Benchmark, build_from_source
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import repo_path
+from o4_llvm import proc
+from o4_llvm.bench.polybench import Benchmark, build_from_source
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import repo_path
 
 PASS, MISCOMPILE, CRASH, TIMEOUT = "PASS", "MISCOMPILE", "CRASH", "TIMEOUT"
 

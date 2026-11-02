@@ -4,8 +4,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from llvm04 import proc
-from llvm04.config import REPO_ROOT, repo_path, sdk_path
+from o4_llvm import proc
+from o4_llvm.config import REPO_ROOT, repo_path, sdk_path
 
 
 class CompileError(Exception):

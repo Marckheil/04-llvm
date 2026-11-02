@@ -2,12 +2,12 @@ import random
 
 import pytest
 
-from llvm04 import proc
-from llvm04.bench.polybench import bitcode_path, list_benchmarks
-from llvm04.compiler.pipeline import InvalidPipeline, load_passes, render
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import load_config
-from llvm04.search.random_search import sample_pipeline
+from o4_llvm import proc
+from o4_llvm.bench.polybench import bitcode_path, list_benchmarks
+from o4_llvm.compiler.pipeline import InvalidPipeline, load_passes, render
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import load_config
+from o4_llvm.search.random_search import sample_pipeline
 
 PASSES = load_passes()
 

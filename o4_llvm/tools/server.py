@@ -1,6 +1,6 @@
 """MCP server over the tool layer (stdio transport, official MCP Python SDK).
 
-    python -m llvm04.tools.server [--config PATH] [--budget N]
+    python -m o4_llvm.tools.server [--config PATH] [--budget N]
 
 Each tool is a thin wrapper over ToolService, which does validation, budgeting,
 error typing and call logging. The descriptions here are what the agent reads.
@@ -15,8 +15,8 @@ from typing import Annotated
 from mcp.server.mcpserver import MCPServer
 from pydantic import Field
 
-from llvm04.config import load_config
-from llvm04.tools.service import ToolService
+from o4_llvm.config import load_config
+from o4_llvm.tools.service import ToolService
 
 INSTRUCTIONS = """\
 Tune the LLVM middle-end pass pipeline of one PolyBench benchmark to run faster than
@@ -37,7 +37,7 @@ BuildId = Annotated[str, Field(description="build_id returned by compile.")]
 
 
 def build_server(svc: ToolService) -> MCPServer:
-    mcp = MCPServer("04llvm", instructions=INSTRUCTIONS)
+    mcp = MCPServer("o4-llvm", instructions=INSTRUCTIONS)
 
     @mcp.tool()
     def list_benchmarks(

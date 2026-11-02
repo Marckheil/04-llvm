@@ -2,9 +2,9 @@ import shutil
 
 import pytest
 
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import load_config
-from llvm04 import proc
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import load_config
+from o4_llvm import proc
 
 PROG = r"""
 #include <stdio.h>

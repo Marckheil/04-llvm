@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from llvm04 import proc
+from o4_llvm import proc
 
 
 class RunError(Exception):

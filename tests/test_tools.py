@@ -2,10 +2,10 @@ import json
 
 import pytest
 
-from llvm04.bench import correctness
-from llvm04.compiler.toolchain import CompileError
-from llvm04.config import load_config
-from llvm04.tools.service import ERROR_CODES, ToolService
+from o4_llvm.bench import correctness
+from o4_llvm.compiler.toolchain import CompileError
+from o4_llvm.config import load_config
+from o4_llvm.tools.service import ERROR_CODES, ToolService
 
 
 @pytest.fixture
@@ -121,7 +121,7 @@ def test_run_benchmark(svc):
 
 
 def test_timeout_is_typed(svc, monkeypatch):
-    import llvm04.tools.service as service
+    import o4_llvm.tools.service as service
     a = svc.compile("jacobi-2d", [], base="O1")
     monkeypatch.setattr(service, "SLOW_FACTOR", 0.0)
     svc._o3_elapsed["jacobi-2d"] = 0.0

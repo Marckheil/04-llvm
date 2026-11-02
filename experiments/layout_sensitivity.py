@@ -14,11 +14,11 @@ import sys
 
 import numpy as np
 
-from llvm04.bench.machine import preflight_warnings
-from llvm04.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
-from llvm04.bench.timing import cv, time_layouts
-from llvm04.compiler.toolchain import Toolchain
-from llvm04.config import load_config, repo_path
+from o4_llvm.bench.machine import preflight_warnings
+from o4_llvm.bench.polybench import bitcode_path, build_bitcode, list_benchmarks
+from o4_llvm.bench.timing import cv, time_layouts
+from o4_llvm.compiler.toolchain import Toolchain
+from o4_llvm.config import load_config, repo_path
 
 
 def main() -> int:

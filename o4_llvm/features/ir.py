@@ -9,7 +9,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from llvm04.compiler.toolchain import Toolchain
+from o4_llvm.compiler.toolchain import Toolchain
 
 _DEFINE = re.compile(r"^define .*@([\w.$]+)\(")
 _INSN = re.compile(r"^\s+(?:%[\w.\-]+ = )?(?:tail |musttail |notail )?([a-z][\w]*)\b")

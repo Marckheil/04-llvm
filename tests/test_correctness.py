@@ -1,6 +1,6 @@
 import numpy as np
 
-from llvm04.bench.correctness import MISCOMPILE, PASS, compare
+from o4_llvm.bench.correctness import MISCOMPILE, PASS, compare
 
 F64 = np.dtype(np.float64)
 I32 = np.dtype(np.int32)
