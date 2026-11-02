@@ -3,13 +3,9 @@ import json
 import pytest
 
 from llvm04.bench import correctness
+from llvm04.compiler.toolchain import CompileError
 from llvm04.config import load_config
 from llvm04.tools.service import ERROR_CODES, ToolService
-
-# Rejected by LLVM 22 itself: standalone instcombine verifies it reached a fixpoint.
-LLVM_REJECTS = ["licm", "loop-distribute", "loop-load-elim", "dse", "nary-reassociate",
-                "argpromotion", "mldst-motion", "instcombine", "function-attrs", "gvn-hoist",
-                "loop-simplify"]
 
 
 @pytest.fixture
@@ -63,7 +59,7 @@ def test_missing_argument_is_typed(svc):
     assert err(svc.check_correctness(build_id="nope"))["code"] == "INVALID_ARGUMENT"
 
 
-def test_compile_gate_and_budget(svc):
+def test_compile_gate_and_budget(svc, monkeypatch):
     a = svc.compile("jacobi-2d", ["separate-const-offset-from-gep"])
     assert a["ok"] and a["budget_used"] == 1 and a["charged"]
     again = svc.compile("jacobi-2d", ["separate-const-offset-from-gep"])
@@ -73,10 +69,19 @@ def test_compile_gate_and_budget(svc):
     g = svc.check_correctness(a["build_id"])
     assert g["ok"] and g["status"] == "PASS"
 
-    e = err(svc.compile("2mm", LLVM_REJECTS, base="none"))
-    assert e["code"] == "COMPILE_ERROR" and "fixpoint" in e["message"]
+    # The action space no longer renders a pipeline LLVM rejects (D15), so inject the failure.
+    build = svc.tc.build
+
+    def rejecting_build(bc, pipeline, out):
+        if "2mm" in str(bc):
+            raise CompileError("opt", [], "LLVM ERROR: injected rejection")
+        return build(bc, pipeline, out)
+
+    monkeypatch.setattr(svc.tc, "build", rejecting_build)
+    e = err(svc.compile("2mm", ["gvn"], base="none"))
+    assert e["code"] == "COMPILE_ERROR" and "injected" in e["message"]
     assert e["budget_used"] == 1  # 2mm has its own episode
-    assert err(svc.compile("2mm", LLVM_REJECTS, base="none"))["charged"] is False
+    assert err(svc.compile("2mm", ["gvn"], base="none"))["charged"] is False
 
     assert svc.compile("jacobi-2d", ["licm"])["budget_used"] == 2
     assert svc.compile("jacobi-2d", [], base="O2")["budget_used"] == 3
