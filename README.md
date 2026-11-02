@@ -29,7 +29,7 @@ Apart from syr2k (below), no method beats `-O3` by 3% or more on the other 19 be
 
 **Models and cost.** The agents were Claude Haiku 5.5 and Claude Opus 5.5. When made to use the full 30-compile budget, both found the jacobi-2d win on every seed. Haiku also found the floyd-warshall win, at **$0.25 per real win**, against $1.58 for Opus. Total API spend for the project was under $28. Full numbers: [results/summary/agent_table_d15.md](results/summary/agent_table_d15.md), and [D15](docs/decisions.md#d15-full-budget-agent-arms-and-the-action-space-fix-re-run-2026-11-02).
 
-## False wins we caught
+## False wins I caught
 
 **syr2k, 1.19× (random search).** It passed every check, held under every memory layout, and on paper beat `-O3` by 19%. But it isn't an optimization. The winning pipeline leaves one redundant store in the hot loop, and that store happens to relieve a dispatch bottleneck on the M2: plain `-O3` with one extra store added gets the same speedup ([D10](docs/decisions.md#d10-validating-the-phase-1-wins-one-optimization-one-microarchitectural-accident-2026-10-31), [D12](docs/decisions.md#d12-hardware-counters-through-a-privilege-dropping-launcher-2026-10-31)). Neither agent submitted it.
 
