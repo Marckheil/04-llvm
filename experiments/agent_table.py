@@ -1,8 +1,9 @@
 """Phase 3 results table: agent arms next to both random-search arms.
 
-Reads results/random_search_<mode>.csv and, per agent arm, results/<stem>.csv from
-experiments/agent_episodes.py. Arms are given as label=stem so that the model behind
-an arm stays in configs/local.yaml. Writes results/summary/agent_table.{md,csv}.
+Reads results/random_search_<mode>.csv (or the --random arms given) and, per agent arm,
+results/<stem>.csv from experiments/agent_episodes.py. Arms are given as label=stem so
+that the model behind an arm stays in configs/local.yaml. Writes
+results/summary/<out>.{md,csv}.
 
 Besides the per-benchmark verdicts it reports per arm: spend, cost per material win,
 compile budget used, malformed-call rate, and the A/A false-alarm rate. Every agent
@@ -52,10 +53,14 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--arm", action="append", required=True, metavar="LABEL=STEM",
                     help="an agent arm: label for the table, stem of results/<stem>.csv")
+    ap.add_argument("--random", action="append", metavar="LABEL=STEM",
+                    help="a random-search arm (default: both Phase 1 arms)")
+    ap.add_argument("--out", default="agent_table")
     args = ap.parse_args()
     cfg = load_config()
     res = repo_path(cfg, "results_dir")
-    arms = {m: load(res / f"random_search_{m}.csv") for m in MODES}
+    randoms = args.random or [f"{m}=random_search_{m}" for m in MODES]
+    arms = {lab: load(res / f"{stem}.csv") for lab, stem in (a.split("=", 1) for a in randoms)}
     agents = {}
     for a in args.arm:
         label, stem = a.split("=", 1)
@@ -72,14 +77,14 @@ def main() -> int:
         table.append(row)
 
     out = res / "summary"
-    with open(out / "agent_table.csv", "w", newline="") as f:
+    with open(out / f"{args.out}.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=head)
         w.writeheader()
         w.writerows(table)
 
     lines = ["# Phase 3 results", "",
              "Median confirmed speedup vs `default<O3>` over seeds, then verdict counts, per arm. "
-             "Random-search arms are from Phase 1 (D9); agent arms from D13. All arms: 30-compile "
+             "Random-search arms: " + ", ".join(randoms) + ". All arms: 30-compile "
              "budget, the same confirmation protocol (llvm04/search/confirm.py).", "",
              "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
     lines += ["| " + " | ".join(r[h] for h in head) + " |" for r in table]
@@ -114,7 +119,7 @@ def main() -> int:
         stops = Counter(r["stop"] for r in rs)
         src = Counter(r["final_source"] for r in rs)
         lines.append(f"  - stops {dict(stops)}; final build source {dict(src)}")
-    (out / "agent_table.md").write_text("\n".join(lines) + "\n")
+    (out / f"{args.out}.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
     return 0
 

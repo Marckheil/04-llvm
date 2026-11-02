@@ -1,6 +1,6 @@
 # Phase 3 results
 
-Median confirmed speedup vs `default<O3>` over seeds, then verdict counts, per arm. Random-search arms are from Phase 1 (D9); agent arms from D13. All arms: 30-compile budget, the same confirmation protocol (llvm04/search/confirm.py).
+Median confirmed speedup vs `default<O3>` over seeds, then verdict counts, per arm. Random-search arms: o3_suffix=random_search_o3_suffix, scratch=random_search_scratch. All arms: 30-compile budget, the same confirmation protocol (llvm04/search/confirm.py).
 
 | benchmark | o3_suffix_median_speedup | o3_suffix_verdicts | scratch_median_speedup | scratch_verdicts | large_median_speedup | large_verdicts | small_median_speedup | small_verdicts |
 |---|---|---|---|---|---|---|---|---|
